@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /checkout
+Disallow: /cart
+Disallow: /orders
+Disallow: /profile
+
+Sitemap: https://krishnafootwear.com/sitemap.xml

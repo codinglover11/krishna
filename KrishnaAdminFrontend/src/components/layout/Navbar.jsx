@@ -1,0 +1,166 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User, LogOut, Search, ShieldCheck } from 'lucide-react';
+import { useAuthStore } from '../../stores/authStore';
+import { NotificationCenter } from '../common/NotificationCenter';
+
+export const Navbar = () => {
+  const navigate = useNavigate();
+  const { adminUser, logout } = useAuthStore();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  return (
+    <header style={{
+      height: '70px',
+      backgroundColor: '#ffffff',
+      borderBottom: '1px solid #e2e8f0',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 32px',
+      position: 'sticky',
+      top: 0,
+      zIndex: 90
+    }}>
+      {/* Global Search Input */}
+      <div style={{ position: 'relative', width: '300px' }}>
+        <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+        <input
+          type="text"
+          placeholder="Search products, orders, categories..."
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '8px 12px 8px 38px',
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1',
+            backgroundColor: '#f8fafc',
+            fontSize: '0.875rem',
+            outline: 'none'
+          }}
+        />
+      </div>
+
+      {/* Right Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        
+        {/* Notification Center */}
+        <NotificationCenter />
+
+        {/* User Profile Badge */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => {
+              setShowProfileMenu(!showProfileMenu);
+              setShowNotifications(false);
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: 0
+            }}
+          >
+            <div style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              backgroundColor: 'hsl(215, 80%, 20%)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: '700',
+              fontSize: '0.9375rem'
+            }}>
+              {adminUser?.name ? adminUser.name.charAt(0).toUpperCase() : 'A'}
+            </div>
+            <div style={{ textAlign: 'left' }}>
+              <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: '700', color: '#0f172a' }}>
+                {adminUser?.name || 'Administrator'}
+              </span>
+              <span style={{ fontSize: '0.75rem', color: 'hsl(30, 90%, 55%)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <ShieldCheck size={12} /> {adminUser?.role || 'ADMIN'}
+              </span>
+            </div>
+          </button>
+
+          {showProfileMenu && (
+            <div style={{
+              position: 'absolute',
+              right: 0,
+              top: '48px',
+              width: '200px',
+              backgroundColor: '#ffffff',
+              borderRadius: '12px',
+              boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+              border: '1px solid #e2e8f0',
+              padding: '8px',
+              zIndex: 100,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '4px'
+            }}>
+              <button
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  navigate('/profile');
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  color: '#334155',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left'
+                }}
+              >
+                <User size={16} /> Profile Info
+              </button>
+              <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '4px 0' }} />
+              <button
+                onClick={handleLogout}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  color: '#ef4444',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  width: '100%',
+                  textAlign: 'left'
+                }}
+              >
+                <LogOut size={16} /> Logout
+              </button>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;

@@ -1,0 +1,38 @@
+{
+  "name": "commonbackend",
+  "version": "1.0.0",
+  "description": "Foundation backend for Krishna Footwear",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "seed": "node server/src/database/run_migrations.js",
+    "test": "node server/src/tests/api.test.js"
+  },
+  "keywords": [
+    "express",
+    "backend",
+    "krishna-footwear"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^2.4.1",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.13.1",
+    "redis": "^4.7.0",
+    "cloudinary": "^2.5.1",
+    "nodemailer": "^6.9.16"
+  }
+}
