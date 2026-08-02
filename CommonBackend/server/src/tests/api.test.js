@@ -130,7 +130,7 @@ const runApiAssertions = async () => {
 
   await testCase('17. Admin Flow: Admin Users & Customer Management', () => {
     const adminCustomerController = require('../controller/adminCustomerController');
-    assert.strictEqual(typeof adminCustomerController.getAllCustomers, 'function', 'getAllCustomers function exists');
+    assert.strictEqual(typeof adminCustomerController.getAdminCustomers, 'function', 'getAdminCustomers function exists');
   });
 
   // --- BACKEND & EDGE CASE TESTS ---
@@ -147,7 +147,7 @@ const runApiAssertions = async () => {
   });
 
   await testCase('19. Communication Layer: Email OTP & Firebase Phone Auth Provider', async () => {
-    const emailRes = await commService.sendEmail({ to: 'qa@example.com', subject: 'QA Email Provider Test', text: 'Hello' });
+    const emailRes = await commService.sendEmail({ to: 'delivered@resend.dev', subject: 'QA Email Provider Test', text: 'Hello' });
     assert.strictEqual(emailRes.success, true);
 
     const firebaseTokenRes = await commService.verifyPhoneToken('dev_sample_token');
