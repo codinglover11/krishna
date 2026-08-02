@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Search, ShieldCheck } from 'lucide-react';
+import { User, LogOut, Search, ShieldCheck, Menu } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { NotificationCenter } from '../common/NotificationCenter';
 
-export const Navbar = () => {
+export const Navbar = ({ toggleSidebar, isMobile }) => {
   const navigate = useNavigate();
   const { adminUser, logout } = useAuthStore();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -23,29 +23,38 @@ export const Navbar = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 32px',
+      padding: isMobile ? '0 16px' : '0 32px',
       position: 'sticky',
       top: 0,
       zIndex: 90
     }}>
-      {/* Global Search Input */}
-      <div style={{ position: 'relative', width: '300px' }}>
-        <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-        <input
-          type="text"
-          placeholder="Search products, orders, categories..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '8px 12px 8px 38px',
-            borderRadius: '8px',
-            border: '1px solid #cbd5e1',
-            backgroundColor: '#f8fafc',
-            fontSize: '0.875rem',
-            outline: 'none'
-          }}
-        />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
+        {isMobile && (
+          <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }}>
+            <Menu size={24} color="#334155" />
+          </button>
+        )}
+        
+        {/* Global Search Input */}
+        <div style={{ position: 'relative', width: isMobile ? '100%' : '300px', maxWidth: '300px' }}>
+          <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+          <input
+            type="text"
+            placeholder={isMobile ? "Search..." : "Search products, orders, categories..."}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '8px 12px 8px 38px',
+              borderRadius: '8px',
+              border: '1px solid #cbd5e1',
+              backgroundColor: '#f8fafc',
+              fontSize: '0.875rem',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
+        </div>
       </div>
 
       {/* Right Controls */}

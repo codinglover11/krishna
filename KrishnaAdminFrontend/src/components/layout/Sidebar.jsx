@@ -15,11 +15,12 @@ import {
   Settings,
   LogOut,
   ShieldAlert,
-  Shield
+  Shield,
+  X
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 
-export const Sidebar = () => {
+export const Sidebar = ({ isOpen, isMobile, onClose }) => {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
 
@@ -54,7 +55,8 @@ export const Sidebar = () => {
       flexDirection: 'column',
       height: '100vh',
       position: 'fixed',
-      left: 0,
+      left: isMobile ? (isOpen ? '0' : '-260px') : '0',
+      transition: 'left 0.3s ease',
       top: 0,
       zIndex: 100,
       boxShadow: '4px 0 10px rgba(0,0,0,0.1)'
@@ -65,28 +67,35 @@ export const Sidebar = () => {
         borderBottom: '1px solid rgba(255,255,255,0.1)',
         display: 'flex',
         alignItems: 'center',
-        gap: '12px'
+        justifyContent: 'space-between'
       }}>
-        <div style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '8px',
-          backgroundColor: 'hsl(30, 90%, 55%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#ffffff',
-          fontWeight: '700',
-          fontSize: '1.125rem'
-        }}>
-          KF
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            backgroundColor: 'hsl(30, 90%, 55%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffffff',
+            fontWeight: '700',
+            fontSize: '1.125rem'
+          }}>
+            KF
+          </div>
+          <div>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: '700', margin: 0, color: '#ffffff' }}>
+              Krishna Admin
+            </h2>
+            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Footwear Management</span>
+          </div>
         </div>
-        <div>
-          <h2 style={{ fontSize: '1.125rem', fontWeight: '700', margin: 0, color: '#ffffff' }}>
-            Krishna Admin
-          </h2>
-          <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Footwear Management</span>
-        </div>
+        {isMobile && (
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#ffffff', cursor: 'pointer', padding: 0, display: 'flex' }}>
+            <X size={24} />
+          </button>
+        )}
       </div>
 
       {/* Navigation List */}
