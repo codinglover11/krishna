@@ -1,0 +1,77 @@
+name: KrishnaFootwear CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: CommonBackend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: CommonBackend/package-lock.json
+
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test --if-present
+
+  frontend:
+    name: Build User Frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: KrishnaFrontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: KrishnaFrontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test --if-present
+
+  admin:
+    name: Build Admin Frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: KrishnaAdminFrontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: KrishnaAdminFrontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test --if-present
+      
