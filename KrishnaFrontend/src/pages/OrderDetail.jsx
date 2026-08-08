@@ -2,11 +2,58 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, CreditCard, ShoppingBag, ArrowLeft, CheckCircle2, Circle } from 'lucide-react';
 import api from '../services/api';
+import toast from 'react-hot-toast';
 
 export const OrderDetail = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Cancellation State
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [requiresFee, setRequiresFee] = useState(false);
+  const [verificationTimer, setVerificationTimer] = useState(0);
+
+  const handleCancelClick = () => {
+    const createdTime = new Date(order.created_at).getTime();
+    const hoursDiff = (Date.now() - createdTime) / (1000 * 60 * 60);
+    setRequiresFee(hoursDiff > 24);
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (requiresFee && verificationTimer === 0) {
+      setVerificationTimer(10);
+      const interval = setInterval(() => {
+        setVerificationTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            executeCancel(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return;
+    }
+    executeCancel(false);
+  };
+
+  const executeCancel = async (feePaid) => {
+    setIsCancelling(true);
+    try {
+      await api.post(`/orders/${order.id}/cancel`, { feePaid });
+      toast.success('Order cancelled successfully.');
+      setShowCancelModal(false);
+      const res = await api.get(`/orders/${order.id}`);
+      setOrder(res.data.data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to cancel order.');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -70,15 +117,22 @@ export const OrderDetail = () => {
           </span>
         </div>
 
-        <div style={{
-          padding: '8px 16px',
-          borderRadius: 'var(--radius-full)',
-          fontWeight: '700',
-          fontSize: '0.875rem',
-          backgroundColor: isCancelled ? 'rgba(239, 68, 68, 0.1)' : 'rgba(235, 94, 85, 0.1)',
-          color: isCancelled ? 'var(--error)' : 'var(--secondary-color)'
-        }}>
-          Status: {order.status}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          {order.status === 'Pending' || order.status === 'Confirmed' ? (
+            <button onClick={handleCancelClick} style={{ padding: '8px 16px', borderRadius: 'var(--radius-full)', backgroundColor: '#fff', border: '1px solid var(--error)', color: 'var(--error)', fontWeight: '600', cursor: 'pointer' }}>
+              Cancel Order
+            </button>
+          ) : null}
+          <div style={{
+            padding: '8px 16px',
+            borderRadius: 'var(--radius-full)',
+            fontWeight: '700',
+            fontSize: '0.875rem',
+            backgroundColor: isCancelled ? 'rgba(239, 68, 68, 0.1)' : 'rgba(235, 94, 85, 0.1)',
+            color: isCancelled ? 'var(--error)' : 'var(--secondary-color)'
+          }}>
+            Status: {order.status}
+          </div>
         </div>
       </div>
 
@@ -236,6 +290,50 @@ export const OrderDetail = () => {
           }
         }
       `}</style>
+
+      {/* Cancel Order Modal */}
+      {showCancelModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ backgroundColor: '#fff', padding: '32px', borderRadius: '12px', width: '90%', maxWidth: '500px', textAlign: 'center' }}>
+            <h2 style={{ margin: '0 0 16px 0', fontSize: '1.5rem', color: 'var(--error)' }}>Cancel Order</h2>
+            
+            {requiresFee ? (
+              <div>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>
+                  Since your order was placed more than 24 hours ago, a cancellation fee of <strong>₹50</strong> applies. Please scan the QR code to pay the fee and complete the cancellation.
+                </p>
+                <div style={{ width: '200px', height: '200px', margin: '0 auto 24px', backgroundColor: '#f8fafc', border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
+                  <img src="/payment/paytm_qr.png" alt="Paytm QR" style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                </div>
+                {verificationTimer > 0 ? (
+                  <p style={{ color: 'var(--primary-color)', fontWeight: '600' }}>Waiting for payment verification... {verificationTimer}s</p>
+                ) : null}
+              </div>
+            ) : (
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                Are you sure you want to cancel this order? This action cannot be undone.
+              </p>
+            )}
+
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '24px' }}>
+              <button 
+                onClick={() => { setShowCancelModal(false); setVerificationTimer(0); }} 
+                disabled={isCancelling || verificationTimer > 0}
+                style={{ padding: '12px 24px', border: '1px solid var(--border-color)', borderRadius: '8px', background: '#fff', cursor: 'pointer', fontWeight: '600' }}
+              >
+                Go Back
+              </button>
+              <button 
+                onClick={handleConfirmCancel}
+                disabled={isCancelling || verificationTimer > 0}
+                style={{ padding: '12px 24px', border: 'none', borderRadius: '8px', background: 'var(--error)', color: '#fff', cursor: 'pointer', fontWeight: '600' }}
+              >
+                {isCancelling ? 'Cancelling...' : requiresFee ? (verificationTimer > 0 ? 'Verifying...' : 'I Have Paid') : 'Yes, Cancel Order'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

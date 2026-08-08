@@ -16,6 +16,9 @@ export const EditProduct = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [newSize, setNewSize] = useState('');
+  const [newColorName, setNewColorName] = useState('');
+  const [newColorCode, setNewColorCode] = useState('#000000');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -76,7 +79,7 @@ export const EditProduct = () => {
           });
 
           if (Array.isArray(prod.images)) {
-            setImages(prod.images.map((img) => img.image_url));
+            setImages(prod.images.map((img) => ({ url: img.image_url, is_primary: img.is_primary, colorId: img.color_id })));
           }
 
           if (Array.isArray(prod.variants)) {
@@ -96,6 +99,30 @@ export const EditProduct = () => {
 
     loadProductData();
   }, [id]);
+
+  const handleAddSize = async () => {
+    if (!newSize) return;
+    try {
+      const res = await adminService.createSize({ size_label: newSize });
+      setMetadata(prev => ({ ...prev, sizes: [...prev.sizes, res] }));
+      setNewSize('');
+      toast.success('Size added');
+    } catch (err) {
+      toast.error('Failed to add size');
+    }
+  };
+
+  const handleAddColor = async () => {
+    if (!newColorName) return;
+    try {
+      const res = await adminService.createColor({ color_name: newColorName, color_code: newColorCode });
+      setMetadata(prev => ({ ...prev, colors: [...prev.colors, res] }));
+      setNewColorName('');
+      toast.success('Color added');
+    } catch (err) {
+      toast.error('Failed to add color');
+    }
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -165,7 +192,7 @@ export const EditProduct = () => {
         setIsSubmitting(false); return;
       }
       if (parsedDiscount !== null && parsedPrice < parsedDiscount) {
-        toast.warning('Discounted price cannot be greater than the original selling price.');
+        toast.warning('Selling Price cannot be greater than MRP (Base Price).');
         setIsSubmitting(false); return;
       }
 
@@ -197,10 +224,10 @@ export const EditProduct = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '1000px' }}>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <Link to="/products" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', textDecoration: 'none', fontWeight: '600', fontSize: '0.875rem' }}>
+        <Link to="/products" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ink-soft)', textDecoration: 'none', fontWeight: '600', fontSize: '0.875rem' }}>
           <ArrowLeft size={16} /> Back to Products
         </Link>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>
           Edit Product: {formData.name}
         </h1>
       </div>
@@ -208,8 +235,8 @@ export const EditProduct = () => {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {/* Basic Info Card */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '700', color: '#0f172a' }}>Basic Information</h3>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', fontFamily: '"Rozha One", serif' }}>Basic Information</h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <FormInput
@@ -239,37 +266,14 @@ export const EditProduct = () => {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
             <FormSelect
               label="Category"
               value={formData.categoryId}
               onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-              options={categories.map((c) => ({ value: c.id, label: c.name }))}
-            />
-            <FormSelect
-              label="Gender"
-              value={formData.gender}
-              onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-              options={[
-                { value: '', label: 'Select Gender' },
-                { value: 'Men', label: 'Men' },
-                { value: 'Women', label: 'Women' },
-                { value: 'None', label: 'None' },
-                { value: 'Boys', label: 'Boys' },
-                { value: 'Girls', label: 'Girls' }
-              ]}
-            />
-            <FormSelect
-              label="Age Group"
-              value={formData.ageGroup}
-              onChange={(e) => setFormData({ ...formData, ageGroup: e.target.value })}
-              options={[
-                { value: '', label: 'Select Age Group' },
-                { value: 'Adults', label: 'Adults' },
-                { value: 'Kids', label: 'Kids' },
-                { value: 'Infants', label: 'Infants' },
-                { value: 'All Ages', label: 'All Ages' }
-              ]}
+              options={categories
+                .filter(c => ['men', 'women', 'kids', 'jutti'].includes(c.slug?.toLowerCase()))
+                .map((c) => ({ value: c.id, label: c.name }))}
             />
           </div>
 
@@ -288,8 +292,8 @@ export const EditProduct = () => {
         </div>
 
         {/* Pricing Card */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '700', color: '#0f172a' }}>Pricing Details</h3>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', fontFamily: '"Rozha One", serif' }}>Pricing Details</h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
             <FormInput
@@ -356,7 +360,7 @@ export const EditProduct = () => {
               }}>
                 {hasError && (
                   <div style={{ color: '#ef4444', fontWeight: '600', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <AlertCircle size={16} /> Discounted price cannot be greater than the original selling price.
+                    <AlertCircle size={16} /> Selling Price cannot be greater than MRP.
                   </div>
                 )}
                 
@@ -394,18 +398,19 @@ export const EditProduct = () => {
         </div>
 
         {/* Images Card */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <ImageUploader
-            images={images.map((url, idx) => ({ url, is_primary: idx === 0 }))}
+            images={images}
             folder="products"
             multiple={true}
             maxFiles={10}
+            colors={metadata.colors}
             label="Product Gallery Images (Cloudinary)"
             onChange={(updatedList) => {
               if (Array.isArray(updatedList)) {
-                setImages(updatedList.map((img) => img.url));
-              } else if (updatedList && updatedList.url) {
-                setImages([updatedList.url]);
+                setImages(updatedList);
+              } else if (updatedList) {
+                setImages([updatedList]);
               } else {
                 setImages([]);
               }
@@ -414,8 +419,28 @@ export const EditProduct = () => {
         </div>
 
         {/* Variants Card */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '700', color: '#0f172a' }}>Variants & Stock Quantities</h3>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          
+          <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', fontFamily: '"Rozha One", serif' }}>Manage Custom Attributes</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+            <div>
+              <label style={{ fontSize: '0.875rem', fontWeight: '600' }}>Add Custom Size</label>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                <input type="text" style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }} placeholder="Size (e.g. UK10)" value={newSize} onChange={(e) => setNewSize(e.target.value)} />
+                <button type="button" onClick={handleAddSize} style={{ padding: '8px 12px', backgroundColor: 'var(--bottle)', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Add</button>
+              </div>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.875rem', fontWeight: '600' }}>Add Custom Color</label>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '8px', alignItems: 'center' }}>
+                <input type="text" style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid var(--line)' }} placeholder="Color Name" value={newColorName} onChange={(e) => setNewColorName(e.target.value)} />
+                <input type="color" value={newColorCode} onChange={(e) => setNewColorCode(e.target.value)} style={{ width: '36px', height: '36px', padding: 0, border: 'none' }} />
+                <button type="button" onClick={handleAddColor} style={{ padding: '8px 12px', backgroundColor: 'var(--bottle)', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Add</button>
+              </div>
+            </div>
+          </div>
+
+          <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', fontFamily: '"Rozha One", serif' }}>Variants & Stock Quantities</h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '12px', alignItems: 'end' }}>
             <FormSelect
@@ -446,9 +471,9 @@ export const EditProduct = () => {
           </div>
 
           {variants.length > 0 && (
-            <div style={{ marginTop: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+            <div style={{ marginTop: '12px', border: '1px solid var(--line)', borderRadius: '8px', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem', textAlign: 'left' }}>
-                <thead style={{ backgroundColor: '#f8fafc' }}>
+                <thead style={{ backgroundColor: 'var(--parchment-soft)' }}>
                   <tr>
                     <th style={{ padding: '10px 16px' }}>Size</th>
                     <th style={{ padding: '10px 16px' }}>Color</th>
@@ -461,15 +486,15 @@ export const EditProduct = () => {
                     const sizeObj = metadata.sizes.find((s) => s.id === v.sizeId);
                     const colorObj = metadata.colors.find((c) => c.id === v.colorId);
                     return (
-                      <tr key={idx} style={{ borderTop: '1px solid #f1f5f9' }}>
+                      <tr key={idx} style={{ borderTop: '1px solid var(--line)' }}>
                         <td style={{ padding: '10px 16px', fontWeight: '600' }}>{sizeObj?.size_label || v.sizeId}</td>
                         <td style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <span style={{ display: 'inline-block', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: colorObj?.color_code || colorObj?.color_name?.toLowerCase().replace(' ', '') || '#ccc', border: '1px solid #ccc' }}></span>
                           {colorObj?.color_name || v.colorId}
                         </td>
-                        <td style={{ padding: '10px 16px', fontWeight: '700', color: v.stockQuantity === 0 ? '#ef4444' : '#0f172a' }}>{v.stockQuantity}</td>
+                        <td style={{ padding: '10px 16px', fontWeight: '700', color: v.stockQuantity === 0 ? 'var(--rose)' : 'var(--ink)' }}>{v.stockQuantity}</td>
                         <td style={{ padding: '10px 16px', textAlign: 'right' }}>
-                          <button type="button" onClick={() => removeVariant(idx)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
+                          <button type="button" onClick={() => removeVariant(idx)} style={{ background: 'none', border: 'none', color: 'var(--rose)', cursor: 'pointer' }}>
                             <Trash2 size={16} />
                           </button>
                         </td>
@@ -483,7 +508,7 @@ export const EditProduct = () => {
         </div>
 
         {/* Feature Flags */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
           <FormCheckbox
             id="isFeatured"
             label="Featured Product"
@@ -512,7 +537,7 @@ export const EditProduct = () => {
 
         {/* Submit Actions */}
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end' }}>
-          <Link to="/products" style={{ padding: '12px 24px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#fff', color: '#334155', textDecoration: 'none', fontWeight: '600' }}>
+          <Link to="/products" style={{ padding: '12px 24px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--card)', color: 'var(--ink-soft)', textDecoration: 'none', fontWeight: '600' }}>
             Cancel
           </Link>
           <button
@@ -522,8 +547,8 @@ export const EditProduct = () => {
               padding: '12px 32px',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: 'hsl(215, 80%, 20%)',
-              color: '#ffffff',
+              backgroundColor: 'var(--chestnut)',
+              color: 'var(--parchment)',
               fontWeight: '700',
               cursor: isSubmitting ? 'not-allowed' : 'pointer'
             }}

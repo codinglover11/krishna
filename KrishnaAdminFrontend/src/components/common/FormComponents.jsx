@@ -3,7 +3,7 @@ import React from 'react';
 export const FormInput = ({ label, error, required, helpText, style, ...props }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left', ...style }}>
     {label && (
-      <label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#334155' }}>
+      <label style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--ink)' }}>
         {label} {required && <span style={{ color: '#ef4444' }}>*</span>}
       </label>
     )}
@@ -12,16 +12,16 @@ export const FormInput = ({ label, error, required, helpText, style, ...props })
       style={{
         padding: '10px 14px',
         borderRadius: '8px',
-        border: error ? '1px solid #ef4444' : '1px solid #cbd5e1',
-        backgroundColor: '#ffffff',
-        color: '#0f172a',
+        border: error ? '1px solid #ef4444' : '1px solid var(--line)',
+        backgroundColor: 'var(--parchment-soft)',
+        color: 'var(--ink)',
         fontSize: '0.9375rem',
         outline: 'none',
         transition: 'border-color 0.2s ease',
         ...props.style
       }}
     />
-    {helpText && !error && <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{helpText}</span>}
+    {helpText && !error && <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{helpText}</span>}
     {error && <span style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: '500' }}>{error}</span>}
   </div>
 );
@@ -29,7 +29,7 @@ export const FormInput = ({ label, error, required, helpText, style, ...props })
 export const FormSelect = ({ label, options = [], error, required, helpText, style, ...props }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left', ...style }}>
     {label && (
-      <label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#334155' }}>
+      <label style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--ink)' }}>
         {label} {required && <span style={{ color: '#ef4444' }}>*</span>}
       </label>
     )}
@@ -38,9 +38,9 @@ export const FormSelect = ({ label, options = [], error, required, helpText, sty
       style={{
         padding: '10px 14px',
         borderRadius: '8px',
-        border: error ? '1px solid #ef4444' : '1px solid #cbd5e1',
-        backgroundColor: '#ffffff',
-        color: '#0f172a',
+        border: error ? '1px solid #ef4444' : '1px solid var(--line)',
+        backgroundColor: 'var(--parchment-soft)',
+        color: 'var(--ink)',
         fontSize: '0.9375rem',
         outline: 'none',
         cursor: 'pointer',
@@ -53,7 +53,7 @@ export const FormSelect = ({ label, options = [], error, required, helpText, sty
         </option>
       ))}
     </select>
-    {helpText && !error && <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{helpText}</span>}
+    {helpText && !error && <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{helpText}</span>}
     {error && <span style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: '500' }}>{error}</span>}
   </div>
 );
@@ -61,7 +61,7 @@ export const FormSelect = ({ label, options = [], error, required, helpText, sty
 export const FormTextarea = ({ label, error, required, rows = 3, helpText, style, ...props }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left', ...style }}>
     {label && (
-      <label style={{ fontSize: '0.875rem', fontWeight: '600', color: '#334155' }}>
+      <label style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--ink)' }}>
         {label} {required && <span style={{ color: '#ef4444' }}>*</span>}
       </label>
     )}
@@ -71,9 +71,9 @@ export const FormTextarea = ({ label, error, required, rows = 3, helpText, style
       style={{
         padding: '10px 14px',
         borderRadius: '8px',
-        border: error ? '1px solid #ef4444' : '1px solid #cbd5e1',
-        backgroundColor: '#ffffff',
-        color: '#0f172a',
+        border: error ? '1px solid #ef4444' : '1px solid var(--line)',
+        backgroundColor: 'var(--parchment-soft)',
+        color: 'var(--ink)',
         fontSize: '0.9375rem',
         outline: 'none',
         fontFamily: 'inherit',
@@ -81,7 +81,7 @@ export const FormTextarea = ({ label, error, required, rows = 3, helpText, style
         ...props.style
       }}
     />
-    {helpText && !error && <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{helpText}</span>}
+    {helpText && !error && <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{helpText}</span>}
     {error && <span style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: '500' }}>{error}</span>}
   </div>
 );
@@ -93,10 +93,10 @@ export const FormCheckbox = ({ label, checked, onChange, id }) => (
       id={id}
       checked={checked}
       onChange={onChange}
-      style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#2563eb' }}
+      style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--brass)' }}
     />
     {label && (
-      <label htmlFor={id} style={{ margin: 0, fontSize: '0.875rem', color: '#334155', cursor: 'pointer' }}>
+      <label htmlFor={id} style={{ margin: 0, fontSize: '0.875rem', color: 'var(--ink)', cursor: 'pointer', fontWeight: 500 }}>
         {label}
       </label>
     )}

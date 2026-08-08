@@ -62,7 +62,7 @@ export const CustomerDetail = () => {
       header: 'Order Number',
       accessor: 'order_number',
       render: (row) => (
-        <Link to={`/orders/${row.id}`} style={{ fontWeight: '700', color: '#2563eb', textDecoration: 'none' }}>
+        <Link to={`/orders/${row.id}`} style={{ fontWeight: '700', color: 'var(--brass)', textDecoration: 'none' }}>
           {row.order_number || row.id.slice(0, 8)}
         </Link>
       )
@@ -81,7 +81,7 @@ export const CustomerDetail = () => {
       header: 'Total Price',
       accessor: 'total_price',
       render: (row) => (
-        <strong style={{ color: '#0f172a' }}>${parseFloat(row.total_price).toFixed(2)}</strong>
+        <strong style={{ color: 'var(--ink)' }}>₹{parseFloat(row.total_price).toFixed(2)}</strong>
       )
     },
     {
@@ -98,8 +98,8 @@ export const CustomerDetail = () => {
           borderRadius: '6px',
           fontSize: '0.75rem',
           fontWeight: '700',
-          backgroundColor: row.status === 'Delivered' ? '#ecfdf5' : '#f1f5f9',
-          color: row.status === 'Delivered' ? '#10b981' : '#475569'
+          backgroundColor: row.status === 'Delivered' ? 'rgba(46, 70, 53, 0.1)' : 'var(--parchment-soft)',
+          color: row.status === 'Delivered' ? 'var(--bottle)' : 'var(--ink-soft)'
         }}>
           {row.status}
         </span>
@@ -109,7 +109,7 @@ export const CustomerDetail = () => {
       header: 'Actions',
       accessor: 'actions',
       render: (row) => (
-        <Link to={`/orders/${row.id}`} style={{ fontSize: '0.8125rem', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>
+        <Link to={`/orders/${row.id}`} style={{ fontSize: '0.8125rem', color: 'var(--brass)', fontWeight: '600', textDecoration: 'none' }}>
           View Details →
         </Link>
       )
@@ -122,10 +122,10 @@ export const CustomerDetail = () => {
       {/* Top Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Link to="/customers" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', textDecoration: 'none', fontWeight: '600', fontSize: '0.875rem' }}>
+          <Link to="/customers" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ink-soft)', textDecoration: 'none', fontWeight: '600', fontSize: '0.875rem' }}>
             <ArrowLeft size={16} /> Back to Customers
           </Link>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>
             {customer.name}
           </h1>
         </div>
@@ -134,8 +134,8 @@ export const CustomerDetail = () => {
           onClick={handleToggleStatus}
           style={{
             padding: '10px 20px',
-            backgroundColor: customer.is_active ? '#ef4444' : '#10b981',
-            color: '#ffffff',
+            backgroundColor: customer.is_active ? 'var(--rose)' : 'var(--bottle)',
+            color: 'var(--parchment)',
             borderRadius: '8px',
             border: 'none',
             fontWeight: '700',
@@ -152,24 +152,24 @@ export const CustomerDetail = () => {
 
       {/* Summary Metric Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-        <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Total Orders Placed</span>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#2563eb', margin: '6px 0 0' }}>{customer.total_orders || 0}</h2>
+        <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Total Orders Placed</span>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--brass)', margin: '6px 0 0' }}>{customer.total_orders || 0}</h2>
         </div>
 
-        <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Lifetime Spent</span>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#10b981', margin: '6px 0 0' }}>${parseFloat(customer.total_spent || 0).toFixed(2)}</h2>
+        <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Lifetime Spent</span>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--bottle)', margin: '4px 0 0' }}>₹{parseFloat(customer.total_spent || 0).toFixed(2)}</h2>
         </div>
 
-        <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Average Order Value</span>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#f59e0b', margin: '6px 0 0' }}>${parseFloat(customer.avg_order_value || 0).toFixed(2)}</h2>
+        <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Average Order Value</span>
+          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--chestnut)', margin: '6px 0 0' }}>₹{parseFloat(customer.avg_order_value || 0).toFixed(2)}</h2>
         </div>
 
-        <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Last Active Order Date</span>
-          <h2 style={{ fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', margin: '10px 0 0' }}>
+        <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+          <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Last Active Order Date</span>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', margin: '10px 0 0' }}>
             {customer.last_order_date ? new Date(customer.last_order_date).toLocaleDateString() : 'No Orders Yet'}
           </h2>
         </div>
@@ -182,38 +182,38 @@ export const CustomerDetail = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Contact Profile Card */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <User size={20} color="#2563eb" /> Customer Information
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <User size={20} color="var(--brass)" /> Customer Information
             </h3>
-            <div style={{ fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div><strong>Full Name:</strong> {customer.name}</div>
-              <div><strong>Email Address:</strong> {customer.email}</div>
+            <div style={{ fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '10px', color: 'var(--ink-soft)' }}>
+              <div><strong style={{ color: 'var(--ink)' }}>Full Name:</strong> {customer.name}</div>
+              <div><strong style={{ color: 'var(--ink)' }}>Email Address:</strong> {customer.email}</div>
               <div>
-                <strong>Account Status:</strong>{' '}
-                <span style={{ fontWeight: '700', color: customer.is_active ? '#10b981' : '#ef4444' }}>
+                <strong style={{ color: 'var(--ink)' }}>Account Status:</strong>{' '}
+                <span style={{ fontWeight: '700', color: customer.is_active ? 'var(--bottle)' : 'var(--rose)' }}>
                   {customer.is_active ? 'Active' : 'Inactive'}
                 </span>
               </div>
-              <div><strong>Registration Date:</strong> {new Date(customer.created_at).toLocaleDateString()}</div>
+              <div><strong style={{ color: 'var(--ink)' }}>Registration Date:</strong> {new Date(customer.created_at).toLocaleDateString()}</div>
             </div>
           </div>
 
           {/* Saved Addresses Card */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <MapPin size={20} color="#10b981" /> Address Book ({addresses.length})
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <MapPin size={20} color="var(--bottle)" /> Address Book ({addresses.length})
             </h3>
 
             {addresses.length === 0 ? (
-              <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>No saved addresses found.</p>
+              <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: 0 }}>No saved addresses found.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {addresses.map((addr, idx) => (
-                  <div key={idx} style={{ padding: '12px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.8125rem', lineHeight: '1.5' }}>
+                  <div key={idx} style={{ padding: '12px', backgroundColor: 'var(--parchment-soft)', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.8125rem', lineHeight: '1.5', color: 'var(--ink-soft)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <strong style={{ color: '#0f172a' }}>{addr.full_name} ({addr.address_type || 'Home'})</strong>
-                      {addr.is_default && <span style={{ fontSize: '0.6875rem', backgroundColor: '#2563eb', color: '#fff', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>Default</span>}
+                      <strong style={{ color: 'var(--ink)' }}>{addr.full_name} ({addr.address_type || 'Home'})</strong>
+                      {addr.is_default && <span style={{ fontSize: '0.6875rem', backgroundColor: 'var(--chestnut)', color: 'var(--parchment)', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>Default</span>}
                     </div>
                     {addr.address_line1}<br />
                     {addr.address_line2 && <>{addr.address_line2}<br /></>}
@@ -229,9 +229,9 @@ export const CustomerDetail = () => {
 
         {/* Right Column: Customer Order History */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ShoppingBag size={20} color="#f59e0b" /> Order History ({orders.length})
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <ShoppingBag size={20} color="var(--chestnut)" /> Order History ({orders.length})
             </h3>
 
             <DataTable

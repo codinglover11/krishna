@@ -28,6 +28,7 @@ const Checkout = lazy(() => import('../pages/Checkout'));
 const OrderSuccess = lazy(() => import('../pages/OrderSuccess'));
 const MyOrders = lazy(() => import('../pages/MyOrders'));
 const OrderDetail = lazy(() => import('../pages/OrderDetail'));
+const DirectCheckout = lazy(() => import('../pages/DirectCheckout'));
 
 // Special Status Pages
 const Unauthorised = lazy(() => import('../pages/Unauthorised'));
@@ -61,6 +62,7 @@ export const AppRoutes = () => {
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="direct-checkout" element={<DirectCheckout />} />
 
           {/* Protected Customer Routes */}
           <Route path="cart" element={

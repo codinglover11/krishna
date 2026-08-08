@@ -1,6 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
+  /* Sawariya Design Tokens */
+  --ink: #221B15;
+  --ink-soft: #4A3F35;
+  --parchment: #F3ECDC;
+  --parchment-soft: #FBF7EE;
+  --card: #FFFCF4;
+  --chestnut: #7C3A2D;
+  --chestnut-dark: #54241A;
+  --brass: #A9793A;
+  --brass-dark: #7A5726;
+  --brass-light: #D8B37A;
+  --bottle: #2E4635;
+  --bottle-dark: #1E2F25;
+  --rose: #B97A66;
+  --rose-dark: #8F5644;
+  --line: rgba(34,27,21,0.16);
+  --shadow: 0 18px 40px -20px rgba(34,27,21,0.35);
+
+  /* Legacy Dark Mode Tokens */
   --bg-primary: #0a0712;
   --bg-secondary: #120e24;
   --bg-tertiary: #1b1635;
@@ -35,9 +54,9 @@
 }
 
 body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
+  background-color: var(--parchment);
+  color: var(--ink);
+  font-family: 'Mukta', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -881,3 +900,238 @@ textarea.form-control {
   font-size: 0.75rem;
   color: var(--text-muted);
 }
+
+/* =========================================
+   Sawariya Product Add Page UI Styles 
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Rozha+One&family=Mukta:wght@400;600;700&display=swap');
+
+.sawariya-add-product-container {
+  /* Scope variables to this container to avoid breaking global admin styles */
+  --s-ink: #221B15;
+  --s-ink-soft: #4A3F35;
+  --s-parchment: #F3ECDC;
+  --s-parchment-soft: #FBF7EE;
+  --s-card: #FFFCF4;
+  --s-chestnut: #7C3A2D;
+  --s-chestnut-dark: #54241A;
+  --s-brass: #A9793A;
+  --s-brass-dark: #7A5726;
+  --s-brass-light: #D8B37A;
+  --s-bottle: #2E4635;
+  --s-bottle-dark: #1E2F25;
+  --s-rose: #B97A66;
+  --s-rose-dark: #8F5644;
+  --s-line: rgba(34,27,21,0.16);
+  --s-shadow: 0 18px 40px -20px rgba(34,27,21,0.35);
+
+  background: var(--s-parchment);
+  color: var(--s-ink);
+  font-family: 'Mukta', sans-serif;
+  padding: 40px 24px;
+  min-height: 100vh;
+  margin: -30px; /* offset admin padding */
+}
+
+.sawariya-add-product-container h1,
+.sawariya-add-product-container h2,
+.sawariya-add-product-container h3,
+.sawariya-add-product-container h4 {
+  font-family: "Rozha One", serif;
+  font-weight: 400;
+  margin: 0;
+  color: var(--s-ink);
+}
+
+.sawariya-add-product-container h1 {
+  margin: 0 0 20px;
+  font-size: 2.5rem;
+}
+
+.sawariya-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 960px) {
+  .sawariya-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sawariya-card {
+  background: var(--s-card);
+  border: 1px solid #ddd;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+
+.sawariya-label {
+  display: block;
+  font-weight: 700;
+  margin: 14px 0 6px;
+  font-family: 'Mukta', sans-serif;
+  color: var(--s-ink);
+}
+
+.sawariya-input, 
+.sawariya-select, 
+.sawariya-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-family: 'Mukta', sans-serif;
+  font-size: 1rem;
+  background: #fff;
+  color: var(--s-ink);
+}
+
+.sawariya-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sawariya-upload {
+  border: 2px dashed var(--s-brass);
+  padding: 30px;
+  text-align: center;
+  border-radius: 14px;
+  background: var(--s-parchment-soft);
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background 0.2s ease;
+}
+
+.sawariya-upload:hover {
+  background: #f4edd9;
+}
+
+.sawariya-preview-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 240px;
+  background: var(--s-parchment);
+  border-radius: 12px;
+  margin-top: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.sawariya-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sawariya-btns {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+}
+
+.sawariya-btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-family: 'Mukta', sans-serif;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  font-size: 1rem;
+}
+
+.sawariya-btn:hover {
+  transform: translateY(-2px);
+}
+
+.sawariya-btn-primary {
+  background: var(--s-chestnut);
+  color: #fff;
+}
+
+.sawariya-btn-secondary {
+  background: var(--s-bottle);
+  color: #fff;
+}
+
+.sawariya-btn-outline {
+  background: transparent;
+  border: 1px solid var(--s-line);
+  color: var(--s-ink);
+}
+
+.sawariya-tag {
+  display: inline-block;
+  padding: 6px 14px;
+  background: var(--s-parchment);
+  border-radius: 20px;
+  margin: 4px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sawariya-tag.active {
+  background: var(--s-chestnut);
+  color: #fff;
+}
+
+.sawariya-tag:hover:not(.active) {
+  border-color: var(--s-chestnut);
+}
+
+/* Product Card Preview (reusing frontend logic for styling) */
+.product-card-preview {
+  background: var(--s-card); 
+  border: 1px solid var(--s-line); 
+  border-radius: 18px;
+  padding: 20px 18px; 
+  position: relative;
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden;
+  box-shadow: var(--s-shadow);
+}
+.product-card-preview .thumb-wrap {
+  position: relative; 
+  flex: 1; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  height: 220px;
+  margin-bottom: 12px;
+}
+.product-card-preview img {
+  max-height: 100%;
+  object-fit: contain;
+}
+.product-card-preview .p-meta h4 {
+  font-family: 'Rozha One', serif; 
+  font-weight: 400; 
+  margin: 4px 0 2px;
+  font-size: 1.25rem;
+}
+.product-card-preview .p-meta .desc {
+  font-size: 12.5px; 
+  color: var(--s-ink-soft); 
+  margin-bottom: 6px;
+}
+.product-card-preview .p-meta .price {
+  font-weight: 800; 
+  color: var(--s-chestnut); 
+  font-size: 15px;
+}
+.product-card-preview .p-meta .price s {
+  font-weight: 500; 
+  color: var(--s-ink-soft); 
+  margin-left: 7px; 
+  font-size: 12.5px;
+}
+

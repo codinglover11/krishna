@@ -73,8 +73,8 @@ export const Reviews = () => {
       accessor: 'product_name',
       render: (row) => (
         <div>
-          <strong style={{ display: 'block', color: '#0f172a' }}>{row.product_name}</strong>
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>SKU: {row.product_sku}</span>
+          <strong style={{ display: 'block', color: 'var(--ink)' }}>{row.product_name}</strong>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>SKU: {row.product_sku}</span>
         </div>
       )
     },
@@ -83,8 +83,8 @@ export const Reviews = () => {
       accessor: 'customer_name',
       render: (row) => (
         <div>
-          <strong style={{ display: 'block', color: '#0f172a' }}>{row.customer_name}</strong>
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.customer_email}</span>
+          <strong style={{ display: 'block', color: 'var(--ink)' }}>{row.customer_name}</strong>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{row.customer_email}</span>
         </div>
       )
     },
@@ -92,8 +92,8 @@ export const Reviews = () => {
       header: 'Rating',
       accessor: 'rating',
       render: (row) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#f59e0b', fontWeight: '700' }}>
-          <Star size={16} fill="#f59e0b" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--chestnut)', fontWeight: '700' }}>
+          <Star size={16} fill="var(--chestnut)" />
           <span>{row.rating}/5</span>
         </div>
       )
@@ -102,7 +102,7 @@ export const Reviews = () => {
       header: 'Comment',
       accessor: 'comment',
       render: (row) => (
-        <span style={{ fontSize: '0.8125rem', color: '#334155', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', maxWidth: '300px' }}>
+        <span style={{ fontSize: '0.8125rem', color: 'var(--ink-soft)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', maxWidth: '300px' }}>
           "{row.comment}"
         </span>
       )
@@ -116,9 +116,8 @@ export const Reviews = () => {
           borderRadius: '6px',
           fontSize: '0.75rem',
           fontWeight: '700',
-          backgroundColor: row.status === 'Approved' ? '#ecfdf5' : row.status === 'Rejected' ? '#fef2f2' : '#fffbe finished',
-          backgroundColor: row.status === 'Approved' ? '#ecfdf5' : row.status === 'Rejected' ? '#fef2f2' : '#fef3c7',
-          color: row.status === 'Approved' ? '#10b981' : row.status === 'Rejected' ? '#ef4444' : '#d97706'
+          backgroundColor: row.status === 'Approved' ? 'rgba(46, 70, 53, 0.1)' : row.status === 'Rejected' ? 'rgba(185, 122, 102, 0.1)' : 'var(--parchment-soft)',
+          color: row.status === 'Approved' ? 'var(--bottle)' : row.status === 'Rejected' ? 'var(--rose)' : 'var(--chestnut)'
         }}>
           {row.status || 'Pending'}
         </span>
@@ -129,24 +128,24 @@ export const Reviews = () => {
       accessor: 'actions',
       render: (row) => (
         <div style={{ display: 'flex', gap: '6px' }}>
-          <button onClick={() => handleViewDetail(row)} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }} title="View Detail">
-            <Eye size={16} color="#2563eb" />
+          <button onClick={() => handleViewDetail(row)} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }} title="View Detail">
+            <Eye size={16} color="var(--brass)" />
           </button>
           
           {row.status !== 'Approved' && (
-            <button onClick={() => handleUpdateStatus(row.id, 'Approved')} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }} title="Approve Review">
-              <CheckCircle size={16} color="#10b981" />
+            <button onClick={() => handleUpdateStatus(row.id, 'Approved')} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }} title="Approve Review">
+              <CheckCircle size={16} color="var(--bottle)" />
             </button>
           )}
 
           {row.status !== 'Rejected' && (
-            <button onClick={() => handleUpdateStatus(row.id, 'Rejected')} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }} title="Reject Review">
-              <XCircle size={16} color="#d97706" />
+            <button onClick={() => handleUpdateStatus(row.id, 'Rejected')} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }} title="Reject Review">
+              <XCircle size={16} color="var(--chestnut)" />
             </button>
           )}
 
-          <button onClick={() => handleDelete(row.id)} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }} title="Delete">
-            <Trash2 size={16} color="#ef4444" />
+          <button onClick={() => handleDelete(row.id)} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }} title="Delete">
+            <Trash2 size={16} color="var(--rose)" />
           </button>
         </div>
       )
@@ -158,8 +157,8 @@ export const Reviews = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Review Management</h1>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '4px 0 0' }}>Approve, reject, or delete customer product ratings and reviews</p>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>Review Management</h1>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: '4px 0 0' }}>Approve, reject, or delete customer product ratings and reviews</p>
         </div>
       </div>
 
@@ -209,7 +208,7 @@ export const Reviews = () => {
       </div>
 
       {/* Reviews Data Table */}
-      <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+      <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
         <DataTable
           columns={columns}
           data={reviewsData.reviews || []}
@@ -223,31 +222,31 @@ export const Reviews = () => {
         {selectedReview && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#f59e0b', fontSize: '1.125rem', fontWeight: '800' }}>
-                <Star size={20} fill="#f59e0b" /> {selectedReview.rating}/5 Stars
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--chestnut)', fontSize: '1.125rem', fontWeight: '800' }}>
+                <Star size={20} fill="var(--chestnut)" /> {selectedReview.rating}/5 Stars
               </div>
               <span style={{
                 padding: '4px 10px',
                 borderRadius: '6px',
                 fontSize: '0.75rem',
                 fontWeight: '700',
-                backgroundColor: selectedReview.status === 'Approved' ? '#ecfdf5' : '#fef2f2',
-                color: selectedReview.status === 'Approved' ? '#10b981' : '#ef4444'
+                backgroundColor: selectedReview.status === 'Approved' ? 'rgba(46, 70, 53, 0.1)' : 'rgba(185, 122, 102, 0.1)',
+                color: selectedReview.status === 'Approved' ? 'var(--bottle)' : 'var(--rose)'
               }}>
                 {selectedReview.status}
               </span>
             </div>
 
-            <div style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.875rem' }}>
-              <div><strong>Product:</strong> {selectedReview.product_name} ({selectedReview.product_sku})</div>
-              <div><strong>Customer Name:</strong> {selectedReview.customer_name}</div>
-              <div><strong>Customer Email:</strong> {selectedReview.customer_email}</div>
-              <div><strong>Posted Date:</strong> {new Date(selectedReview.created_at).toLocaleString()}</div>
+            <div style={{ backgroundColor: 'var(--parchment-soft)', padding: '16px', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.875rem' }}>
+              <div><strong style={{ color: 'var(--ink)' }}>Product:</strong> {selectedReview.product_name} ({selectedReview.product_sku})</div>
+              <div><strong style={{ color: 'var(--ink)' }}>Customer Name:</strong> {selectedReview.customer_name}</div>
+              <div><strong style={{ color: 'var(--ink)' }}>Customer Email:</strong> {selectedReview.customer_email}</div>
+              <div><strong style={{ color: 'var(--ink)' }}>Posted Date:</strong> {new Date(selectedReview.created_at).toLocaleString()}</div>
             </div>
 
             <div>
-              <strong style={{ display: 'block', fontSize: '0.875rem', color: '#0f172a', marginBottom: '6px' }}>Customer Feedback Comment:</strong>
-              <p style={{ margin: 0, padding: '12px', backgroundColor: '#f1f5f9', borderRadius: '6px', fontStyle: 'italic', fontSize: '0.9375rem', color: '#334155' }}>
+              <strong style={{ display: 'block', fontSize: '0.875rem', color: 'var(--ink)', marginBottom: '6px' }}>Customer Feedback Comment:</strong>
+              <p style={{ margin: 0, padding: '12px', backgroundColor: 'var(--parchment-soft)', borderRadius: '6px', fontStyle: 'italic', fontSize: '0.9375rem', color: 'var(--ink-soft)' }}>
                 "{selectedReview.comment}"
               </p>
             </div>
@@ -259,7 +258,7 @@ export const Reviews = () => {
                     handleUpdateStatus(selectedReview.id, 'Approved');
                     setIsDetailModalOpen(false);
                   }}
-                  style={{ padding: '10px 18px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: '700', cursor: 'pointer' }}
+                  style={{ padding: '10px 18px', backgroundColor: 'var(--bottle)', color: 'var(--parchment)', border: 'none', borderRadius: '6px', fontWeight: '700', cursor: 'pointer' }}
                 >
                   Approve Review
                 </button>
@@ -271,7 +270,7 @@ export const Reviews = () => {
                     handleUpdateStatus(selectedReview.id, 'Rejected');
                     setIsDetailModalOpen(false);
                   }}
-                  style={{ padding: '10px 18px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: '700', cursor: 'pointer' }}
+                  style={{ padding: '10px 18px', backgroundColor: 'var(--rose)', color: 'var(--parchment)', border: 'none', borderRadius: '6px', fontWeight: '700', cursor: 'pointer' }}
                 >
                   Reject Review
                 </button>

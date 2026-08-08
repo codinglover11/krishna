@@ -51,15 +51,17 @@ const orderRepository = {
       const orderQuery = `
         INSERT INTO orders (
           user_id, address_id, status, total_price, discount_amount, tax_amount,
-          shipping_amount, payment_method, payment_status, order_number
+          shipping_amount, payment_method, payment_status, order_number,
+          delivery_distance, delivery_charge
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *
       `;
       const orderRes = await client.query(orderQuery, [
         userId, data.addressId, 'Pending', data.totalPrice, data.discountAmount || 0,
         data.taxAmount || 0, data.shippingAmount || 0, data.paymentMethod || 'COD',
-        'Pending', data.orderNumber
+        data.paymentStatus || 'Pending', data.orderNumber,
+        data.deliveryDistance || null, data.deliveryCharge || 0
       ]);
       const order = orderRes.rows[0];
 
@@ -123,6 +125,14 @@ const orderRepository = {
       params = [status, id];
     }
     const res = await pool.query(query, params);
+    return res.rows[0];
+  },
+
+  updatePaymentStatus: async (id, paymentStatus) => {
+    const res = await pool.query(
+      `UPDATE orders SET payment_status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
+      [paymentStatus, id]
+    );
     return res.rows[0];
   },
 

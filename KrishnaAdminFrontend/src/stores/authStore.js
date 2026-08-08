@@ -2,18 +2,35 @@ import { create } from 'zustand';
 import api from '../services/api';
 import { toast } from './toastStore';
 
+// Utility to parse JWT safely
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
+const storedToken = localStorage.getItem('krishna_admin_token') || localStorage.getItem('authToken') || null;
+const decodedUser = storedToken ? parseJwt(storedToken) : null;
+const storedUser = decodedUser || (localStorage.getItem('krishna_admin_user') ? JSON.parse(localStorage.getItem('krishna_admin_user')) : null);
+
 export const useAuthStore = create((set, get) => ({
-  adminUser: JSON.parse(localStorage.getItem('krishna_admin_user') || 'null'),
-  accessToken: localStorage.getItem('krishna_admin_token') || null,
-  isAuthenticated: !!localStorage.getItem('krishna_admin_token'),
+  adminUser: storedUser,
+  accessToken: storedToken,
+  isAuthenticated: !!storedToken,
   isLoading: false,
 
   setAuth: (user, token) => {
-    if (user && token) {
-      localStorage.setItem('krishna_admin_user', JSON.stringify(user));
+    if (token) {
       localStorage.setItem('krishna_admin_token', token);
+      localStorage.setItem('authToken', token);
+      const decodedUser = parseJwt(token) || user;
+      if (decodedUser) {
+        localStorage.setItem('krishna_admin_user', JSON.stringify(decodedUser));
+      }
       set({
-        adminUser: user,
+        adminUser: decodedUser,
         accessToken: token,
         isAuthenticated: true,
         isLoading: false
@@ -21,6 +38,7 @@ export const useAuthStore = create((set, get) => ({
     } else {
       localStorage.removeItem('krishna_admin_user');
       localStorage.removeItem('krishna_admin_token');
+      localStorage.removeItem('authToken');
       set({
         adminUser: null,
         accessToken: null,

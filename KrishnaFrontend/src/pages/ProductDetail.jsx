@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { ShoppingCart, Heart, ArrowLeft, Star, ShieldCheck, RefreshCw } from 'lucide-react';
+import { ShoppingCart, Heart, ArrowLeft, Star, ShieldCheck, RefreshCw, X } from 'lucide-react';
 import productService from '../services/productService';
 import { useAuthAction } from '../hooks/useAuthAction';
 import { useWishlistStore } from '../stores/wishlistStore';
 import { toast } from '../stores/toastStore';
 import api from '../services/api';
 import ProductCard from '../components/product/ProductCard';
-import { useOrderModalStore } from '../stores/orderModalStore';
+import { useCartStore } from '../stores/cartStore';
 
 export const ProductDetail = () => {
   const { id: paramId } = useParams();
@@ -17,6 +17,7 @@ export const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [fullScreenImage, setFullScreenImage] = useState(false);
 
   // Checks if param is UUID format
   const isUuid = (val) => /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val);
@@ -67,15 +68,28 @@ export const ProductDetail = () => {
   const wishlistItems = useWishlistStore((state) => state.items);
   const isWishlisted = product?.id ? wishlistItems.some((item) => item.product_id === product.id) : false;
 
-  const handleAddToCart = () => {
-    const { openModal } = useOrderModalStore.getState();
-    openModal(product.name);
+  const handleDirectCheckout = () => {
+    // allow guest checkout for whatsapp
+    if (sizes.length > 0 && !selectedSize) {
+      toast.warning('Size not choose');
+      return;
+    }
+    if (colors.length > 0 && !selectedColor) {
+      toast.warning('Color not choosed');
+      return;
+    }
+    const activeVariant = product.variants.find(
+      (v) => v.size_label === selectedSize && v.color_name === selectedColor
+    );
+    if (!activeVariant) {
+      toast.warning('Selected combination is currently unavailable.');
+      return;
+    }
+    navigate('/direct-checkout', { state: { product, selectedSize, selectedColor } });
   };
 
-  const handleBuyNow = () => {
-    const { openModal } = useOrderModalStore.getState();
-    openModal(product.name);
-  };
+  const handleAddToCart = handleDirectCheckout;
+  const handleBuyNow = handleDirectCheckout;
 
   const handleAddWishlist = () => {
     runWithAuth(async () => {
@@ -114,8 +128,8 @@ export const ProductDetail = () => {
   }
 
   // Extract unique sizes and colors from variants list
-  const sizes = [...new Set(product.variants.map((v) => v.size_label))];
-  const colors = [...new Set(product.variants.map((v) => v.color_name))];
+  const sizes = [...new Set(product.variants.map((v) => v.size_label).filter(Boolean))];
+  const colors = [...new Set(product.variants.map((v) => v.color_name).filter(Boolean))];
 
   // Determine stock quantity for active configuration
   const activeVariant = product.variants.find(
@@ -123,9 +137,9 @@ export const ProductDetail = () => {
   );
   const stockAvailable = activeVariant ? activeVariant.stock_quantity : null;
 
-  const price = parseFloat(product.price);
+  const price = parseFloat(product.price) || 0;
   const discountPrice = product.discount_price ? parseFloat(product.discount_price) : null;
-  const hasDiscount = discountPrice !== null && discountPrice < price;
+  const hasDiscount = discountPrice !== null && discountPrice > 0;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px', width: '100%' }}>
@@ -171,8 +185,9 @@ export const ProductDetail = () => {
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
-            border: '1px solid var(--border-color)'
-          }}>
+            border: '1px solid var(--border-color)',
+            cursor: 'zoom-in'
+          }} onClick={() => setFullScreenImage(true)}>
             {product.images && product.images[activeImageIndex] ? (
               <img
                 src={product.images[activeImageIndex].image_url}
@@ -240,15 +255,15 @@ export const ProductDetail = () => {
             {hasDiscount ? (
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
                 <span style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--secondary-color)' }}>
-                  ${discountPrice.toFixed(2)}
+                  ₹{discountPrice.toFixed(2)}
                 </span>
                 <span style={{ fontSize: '1.25rem', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
-                  ${price.toFixed(2)}
+                  ₹{price.toFixed(2)}
                 </span>
               </div>
             ) : (
               <span style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--primary-color)' }}>
-                ${price.toFixed(2)}
+                ₹{price.toFixed(2)}
               </span>
             )}
             <div style={{ marginTop: '8px' }}>
@@ -270,19 +285,14 @@ export const ProductDetail = () => {
                 {colors.map((color) => (
                   <button
                     key={color}
-                    onClick={() => { setSelectedColor(color); setSelectedSize(''); }}
-                    style={{
-                      padding: '10px 16px',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid',
-                      borderColor: selectedColor === color ? 'var(--primary-color)' : 'var(--border-color)',
-                      backgroundColor: selectedColor === color ? 'var(--primary-color)' : 'transparent',
-                      color: selectedColor === color ? 'var(--text-light)' : 'var(--text-primary)',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px'
+                    className={`color-selector-btn ${selectedColor === color ? 'selected' : ''}`}
+                    onClick={() => {
+                      setSelectedColor(color);
+                      const colorObj = product.variants.find(v => v.color_name === color);
+                      if (colorObj && colorObj.color_id) {
+                         const matchingImageIndex = product.images?.findIndex(img => img.color_id === colorObj.color_id);
+                         if (matchingImageIndex !== -1 && matchingImageIndex !== undefined) setActiveImageIndex(matchingImageIndex);
+                      }
                     }}
                   >
                     <span style={{
@@ -313,9 +323,9 @@ export const ProductDetail = () => {
                       padding: '10px 16px',
                       borderRadius: 'var(--radius-md)',
                       border: '1px solid',
-                      borderColor: selectedSize === size ? 'var(--primary-color)' : 'var(--border-color)',
-                      backgroundColor: selectedSize === size ? 'var(--primary-color)' : 'transparent',
-                      color: selectedSize === size ? 'var(--text-light)' : 'var(--text-primary)',
+                      borderColor: selectedSize === size ? 'var(--secondary-color)' : 'var(--border-color)',
+                      backgroundColor: selectedSize === size ? 'rgba(235, 94, 85, 0.1)' : 'transparent',
+                      color: selectedSize === size ? 'var(--secondary-color)' : 'var(--text-primary)',
                       fontWeight: '600',
                       cursor: 'pointer'
                     }}
@@ -446,6 +456,29 @@ export const ProductDetail = () => {
             ))}
           </div>
         </section>
+      )}
+
+      {/* Fullscreen Lightbox */}
+      {fullScreenImage && product.images && product.images[activeImageIndex] && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.9)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(5px)'
+        }} onClick={() => setFullScreenImage(false)}>
+          <button 
+            style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', padding: '8px' }}
+            onClick={(e) => { e.stopPropagation(); setFullScreenImage(false); }}
+          >
+            <X size={32} />
+          </button>
+          <img 
+            src={product.images[activeImageIndex].image_url} 
+            alt={product.name} 
+            style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }} 
+            onClick={(e) => e.stopPropagation()} 
+          />
+        </div>
       )}
 
     </div>

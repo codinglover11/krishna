@@ -42,13 +42,13 @@ export const Contact = () => {
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '64px', alignItems: 'start' }}>
-        
+
         {/* Contact Info */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
           <h3 style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--primary-color)', margin: 0 }}>
             Contact Information
           </h3>
-          
+
           {/* Phone Support */}
           <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
             <div style={{ padding: '12px', backgroundColor: 'var(--bg-muted)', borderRadius: 'var(--radius-md)', color: 'var(--primary-color)' }}>
@@ -61,7 +61,7 @@ export const Contact = () => {
               </a>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '0.8125rem', marginTop: '4px' }}>
                 <Clock size={14} />
-                <span>Mon - Sun: 9:00 AM - 10:00 PM (IST)</span>
+                <span>Mon - Sat: 9:00 AM - 10:00 PM (IST)</span>
               </div>
             </div>
           </div>
@@ -88,8 +88,8 @@ export const Contact = () => {
               <h4 style={{ fontWeight: '600', margin: '0 0 4px', fontSize: '1rem' }}>Retail Hub</h4>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', lineHeight: '1.6', margin: '0 0 12px' }}>
                 <strong>Krishna Footwear</strong><br />
-                Varun Path Mansarowar Near Sharma Sweets,<br />
-                Jaipur Rajasthan, 302020, India
+                VQ94+P96, Swarn Path, Sector II, Varun Path,<br />
+                Mansarovar Sector 4, Jaipur, Rajasthan 302020, India
               </p>
 
               <a

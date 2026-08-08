@@ -13,7 +13,7 @@ export const DataTable = ({
 }) => {
   if (isLoading) {
     return (
-      <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+      <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
         <TableSkeleton rows={6} columns={columns.length || 4} />
       </div>
     );
@@ -21,23 +21,23 @@ export const DataTable = ({
 
   return (
     <div style={{
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--card)',
       borderRadius: '12px',
-      border: '1px solid #e2e8f0',
+      border: '1px solid var(--line)',
       overflow: 'hidden',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+      boxShadow: 'var(--shadow)'
     }}>
       <div style={{ overflowX: 'auto', width: '100%' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
           <thead>
-            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            <tr style={{ backgroundColor: 'var(--parchment-soft)', borderBottom: '1px solid var(--line)' }}>
               {columns.map((col, idx) => (
                 <th
                   key={col.accessor || idx}
                   style={{
                     padding: '14px 20px',
                     fontWeight: '700',
-                    color: '#475569',
+                    color: 'var(--chestnut)',
                     textTransform: 'uppercase',
                     fontSize: '0.75rem',
                     letterSpacing: '0.05em'
@@ -51,10 +51,10 @@ export const DataTable = ({
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length || 1} style={{ padding: '48px 24px', textAlign: 'center', color: '#94a3b8' }}>
+                <td colSpan={columns.length || 1} style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--ink-soft)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <Inbox size={40} style={{ strokeWidth: 1.5 }} />
-                    <span style={{ fontSize: '0.9375rem', color: '#64748b' }}>{emptyMessage}</span>
+                    <Inbox size={40} style={{ strokeWidth: 1.5, color: 'var(--brass-light)' }} />
+                    <span style={{ fontSize: '0.9375rem', color: 'var(--ink-soft)' }}>{emptyMessage}</span>
                   </div>
                 </td>
               </tr>
@@ -63,14 +63,14 @@ export const DataTable = ({
                 <tr
                   key={row[rowKey] || rIdx}
                   style={{
-                    borderBottom: rIdx === data.length - 1 ? 'none' : '1px solid #f1f5f9',
+                    borderBottom: rIdx === data.length - 1 ? 'none' : '1px solid var(--line)',
                     transition: 'background-color 0.15s ease'
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--parchment-soft)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
                   {columns.map((col, cIdx) => (
-                    <td key={col.accessor || cIdx} style={{ padding: '16px 20px', color: '#1e293b', verticalAlign: 'middle' }}>
+                    <td key={col.accessor || cIdx} style={{ padding: '16px 20px', color: 'var(--ink)', verticalAlign: 'middle' }}>
                       {col.render ? col.render(row) : row[col.accessor] ?? '-'}
                     </td>
                   ))}

@@ -11,6 +11,8 @@ router.use(adminMiddleware);
 
 router.get('/', inventoryController.getInventory);
 router.get('/metadata', inventoryController.getLookupMetadata);
+router.post('/metadata/sizes', inventoryController.createSize);
+router.post('/metadata/colors', inventoryController.createColor);
 router.patch('/variants/:variantId', inventoryController.updateVariantStock);
 
 module.exports = router;

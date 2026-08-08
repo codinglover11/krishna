@@ -18,8 +18,8 @@ export const Navbar = ({ toggleSidebar, isMobile }) => {
   return (
     <header style={{
       height: '70px',
-      backgroundColor: '#ffffff',
-      borderBottom: '1px solid #e2e8f0',
+      backgroundColor: 'var(--card)',
+      borderBottom: '1px solid var(--line)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
@@ -47,8 +47,9 @@ export const Navbar = ({ toggleSidebar, isMobile }) => {
               width: '100%',
               padding: '8px 12px 8px 38px',
               borderRadius: '8px',
-              border: '1px solid #cbd5e1',
-              backgroundColor: '#f8fafc',
+              border: '1px solid var(--line)',
+              backgroundColor: 'var(--parchment)',
+              color: 'var(--ink)',
               fontSize: '0.875rem',
               outline: 'none',
               boxSizing: 'border-box'
@@ -84,8 +85,8 @@ export const Navbar = ({ toggleSidebar, isMobile }) => {
               width: '38px',
               height: '38px',
               borderRadius: '50%',
-              backgroundColor: 'hsl(215, 80%, 20%)',
-              color: '#ffffff',
+              backgroundColor: 'var(--brass)',
+              color: 'var(--card)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -95,10 +96,10 @@ export const Navbar = ({ toggleSidebar, isMobile }) => {
               {adminUser?.name ? adminUser.name.charAt(0).toUpperCase() : 'A'}
             </div>
             <div style={{ textAlign: 'left' }}>
-              <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: '700', color: '#0f172a' }}>
+              <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: '700', color: 'var(--ink)' }}>
                 {adminUser?.name || 'Administrator'}
               </span>
-              <span style={{ fontSize: '0.75rem', color: 'hsl(30, 90%, 55%)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--brass-dark)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <ShieldCheck size={12} /> {adminUser?.role || 'ADMIN'}
               </span>
             </div>
@@ -110,10 +111,10 @@ export const Navbar = ({ toggleSidebar, isMobile }) => {
               right: 0,
               top: '48px',
               width: '200px',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--card)',
               borderRadius: '12px',
-              boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
-              border: '1px solid #e2e8f0',
+              boxShadow: 'var(--shadow)',
+              border: '1px solid var(--line)',
               padding: '8px',
               zIndex: 100,
               display: 'flex',
@@ -133,7 +134,7 @@ export const Navbar = ({ toggleSidebar, isMobile }) => {
                   borderRadius: '6px',
                   border: 'none',
                   backgroundColor: 'transparent',
-                  color: '#334155',
+                  color: 'var(--ink)',
                   fontSize: '0.875rem',
                   cursor: 'pointer',
                   width: '100%',
@@ -142,7 +143,7 @@ export const Navbar = ({ toggleSidebar, isMobile }) => {
               >
                 <User size={16} /> Profile Info
               </button>
-              <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '4px 0' }} />
+              <hr style={{ border: 'none', borderTop: '1px solid var(--line)', margin: '4px 0' }} />
               <button
                 onClick={handleLogout}
                 style={{

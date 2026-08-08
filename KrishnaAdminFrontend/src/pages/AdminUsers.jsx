@@ -81,8 +81,8 @@ export const AdminUsers = () => {
       accessor: 'name',
       render: (row) => (
         <div>
-          <strong style={{ display: 'block', color: '#0f172a' }}>{row.name}</strong>
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.email}</span>
+          <strong style={{ display: 'block', color: 'var(--ink)' }}>{row.name}</strong>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{row.email}</span>
         </div>
       )
     },
@@ -95,9 +95,9 @@ export const AdminUsers = () => {
           borderRadius: '6px',
           fontSize: '0.8125rem',
           fontWeight: '700',
-          backgroundColor: row.role_name === 'Super Admin' ? '#eff6ff' : '#f8fafc',
-          color: row.role_name === 'Super Admin' ? '#2563eb' : '#475569',
-          border: '1px solid #cbd5e1'
+          backgroundColor: row.role_name === 'Super Admin' ? 'var(--parchment-soft)' : 'var(--card)',
+          color: row.role_name === 'Super Admin' ? 'var(--brass)' : 'var(--ink-soft)',
+          border: '1px solid var(--line)'
         }}>
           <Shield size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {row.role_name}
         </span>
@@ -112,8 +112,8 @@ export const AdminUsers = () => {
           borderRadius: '6px',
           fontSize: '0.75rem',
           fontWeight: '700',
-          backgroundColor: row.is_active ? '#ecfdf5' : '#fef2f2',
-          color: row.is_active ? '#10b981' : '#ef4444'
+          backgroundColor: row.is_active ? 'rgba(46, 70, 53, 0.1)' : 'rgba(185, 122, 102, 0.1)',
+          color: row.is_active ? 'var(--bottle)' : 'var(--rose)'
         }}>
           {row.is_active ? 'Active' : 'Deactivated'}
         </span>
@@ -134,8 +134,8 @@ export const AdminUsers = () => {
             padding: '6px 12px',
             borderRadius: '6px',
             border: 'none',
-            backgroundColor: row.is_active ? '#fef2f2' : '#ecfdf5',
-            color: row.is_active ? '#ef4444' : '#10b981',
+            backgroundColor: row.is_active ? 'rgba(185, 122, 102, 0.1)' : 'rgba(46, 70, 53, 0.1)',
+            color: row.is_active ? 'var(--rose)' : 'var(--bottle)',
             fontWeight: '700',
             fontSize: '0.75rem',
             cursor: 'pointer',
@@ -155,16 +155,16 @@ export const AdminUsers = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Admin User Accounts</h1>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage administrative team accounts and role assignments</p>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>Admin User Accounts</h1>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage administrative team accounts and role assignments</p>
         </div>
 
         <button
           onClick={handleOpenModal}
           style={{
             padding: '10px 18px',
-            backgroundColor: '#2563eb',
-            color: '#fff',
+            backgroundColor: 'var(--chestnut)',
+            color: 'var(--parchment)',
             border: 'none',
             borderRadius: '8px',
             fontWeight: '700',
@@ -179,7 +179,7 @@ export const AdminUsers = () => {
         </button>
       </div>
 
-      <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+      <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
         <DataTable
           columns={columns}
           data={adminUsers}
@@ -242,8 +242,8 @@ export const AdminUsers = () => {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
-            <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}>Cancel</button>
-            <button type="submit" style={{ padding: '10px 20px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: '700', cursor: 'pointer' }}>
+            <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--card)', cursor: 'pointer' }}>Cancel</button>
+            <button type="submit" style={{ padding: '10px 20px', borderRadius: '6px', border: 'none', background: 'var(--chestnut)', color: 'var(--parchment)', fontWeight: '700', cursor: 'pointer' }}>
               Create Account
             </button>
           </div>

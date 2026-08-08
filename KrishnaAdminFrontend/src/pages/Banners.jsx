@@ -135,11 +135,11 @@ export const Banners = () => {
       header: 'Banner Image',
       accessor: 'image_url',
       render: (row) => (
-        <div style={{ width: '120px', height: '50px', borderRadius: '6px', overflow: 'hidden', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1' }}>
+        <div style={{ width: '120px', height: '50px', borderRadius: '6px', overflow: 'hidden', backgroundColor: 'var(--parchment-soft)', border: '1px solid var(--line)' }}>
           {row.image_url ? (
             <img src={row.image_url} alt={row.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#94a3b8' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ink-soft)' }}>
               <ImageIcon size={20} />
             </div>
           )}
@@ -151,21 +151,21 @@ export const Banners = () => {
       accessor: 'title',
       render: (row) => (
         <div>
-          <strong style={{ display: 'block', color: '#0f172a' }}>{row.title}</strong>
-          {row.subtitle && <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.subtitle}</span>}
+          <strong style={{ display: 'block', color: 'var(--ink)' }}>{row.title}</strong>
+          {row.subtitle && <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{row.subtitle}</span>}
         </div>
       )
     },
     {
       header: 'Order',
       accessor: 'display_order',
-      render: (row) => <span style={{ fontWeight: '700', color: '#2563eb' }}>#{row.display_order || 0}</span>
+      render: (row) => <span style={{ fontWeight: '700', color: 'var(--brass)' }}>#{row.display_order || 0}</span>
     },
     {
       header: 'Link URL',
       accessor: 'link_url',
       render: (row) => row.link_url ? (
-        <span style={{ fontSize: '0.8125rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <span style={{ fontSize: '0.8125rem', color: 'var(--ink-soft)', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <LinkIcon size={14} /> {row.link_url}
         </span>
       ) : '-'
@@ -179,8 +179,8 @@ export const Banners = () => {
           borderRadius: '6px',
           fontSize: '0.75rem',
           fontWeight: '700',
-          backgroundColor: row.is_deleted ? '#fef2f2' : row.is_active ? '#ecfdf5' : '#f1f5f9',
-          color: row.is_deleted ? '#ef4444' : row.is_active ? '#10b981' : '#64748b'
+          backgroundColor: row.is_deleted ? 'rgba(185, 122, 102, 0.1)' : row.is_active ? 'rgba(46, 70, 53, 0.1)' : 'var(--parchment-soft)',
+          color: row.is_deleted ? 'var(--rose)' : row.is_active ? 'var(--bottle)' : 'var(--ink-soft)'
         }}>
           {row.is_deleted ? 'Soft Deleted' : row.is_active ? 'Active' : 'Disabled'}
         </span>
@@ -191,17 +191,17 @@ export const Banners = () => {
       accessor: 'actions',
       render: (row) => (
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={() => handleOpenModal(row)} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }}>
-            <Edit2 size={16} color="#2563eb" />
+          <button onClick={() => handleOpenModal(row)} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }}>
+            <Edit2 size={16} color="var(--brass)" />
           </button>
 
           {row.is_deleted ? (
-            <button onClick={() => handleRestore(row.id)} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }} title="Restore">
-              <RotateCcw size={16} color="#10b981" />
+            <button onClick={() => handleRestore(row.id)} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }} title="Restore">
+              <RotateCcw size={16} color="var(--bottle)" />
             </button>
           ) : (
-            <button onClick={() => handleDelete(row.id)} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }} title="Delete">
-              <Trash2 size={16} color="#ef4444" />
+            <button onClick={() => handleDelete(row.id)} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }} title="Delete">
+              <Trash2 size={16} color="var(--rose)" />
             </button>
           )}
         </div>
@@ -214,16 +214,16 @@ export const Banners = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Banner Management</h1>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage hero slider promotional banners for customer website</p>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>Banner Management</h1>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage hero slider promotional banners for customer website</p>
         </div>
 
         <button
           onClick={() => handleOpenModal()}
           style={{
             padding: '10px 18px',
-            backgroundColor: '#2563eb',
-            color: '#fff',
+            backgroundColor: 'var(--chestnut)',
+            color: 'var(--parchment)',
             border: 'none',
             borderRadius: '8px',
             fontWeight: '700',
@@ -238,7 +238,7 @@ export const Banners = () => {
         </button>
       </div>
 
-      <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+      <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
         <DataTable
           columns={columns}
           data={banners}
@@ -337,8 +337,8 @@ export const Banners = () => {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
-            <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}>Cancel</button>
-            <button type="submit" style={{ padding: '10px 20px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: '700', cursor: 'pointer' }}>
+            <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--card)', cursor: 'pointer', color: 'var(--ink)' }}>Cancel</button>
+            <button type="submit" style={{ padding: '10px 20px', borderRadius: '6px', border: 'none', background: 'var(--chestnut)', color: 'var(--parchment)', fontWeight: '700', cursor: 'pointer' }}>
               {editingBanner ? 'Update Banner' : 'Create Banner'}
             </button>
           </div>

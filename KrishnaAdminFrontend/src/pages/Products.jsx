@@ -117,11 +117,11 @@ export const Products = () => {
       header: 'Image',
       accessor: 'primary_image',
       render: (row) => (
-        <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: '#f1f5f9', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: 'var(--parchment-soft)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--line)' }}>
           {row.primary_image ? (
             <img src={row.primary_image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <ImageIcon size={20} color="#94a3b8" />
+            <ImageIcon size={20} color="var(--ink-soft)" />
           )}
         </div>
       )
@@ -131,8 +131,8 @@ export const Products = () => {
       accessor: 'name',
       render: (row) => (
         <div>
-          <strong style={{ display: 'block', color: '#0f172a', fontSize: '0.9375rem' }}>{row.name}</strong>
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Brand: {row.brand || 'Krishna Footwear'}</span>
+          <strong style={{ display: 'block', color: 'var(--ink)', fontSize: '0.9375rem' }}>{row.name}</strong>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>Brand: {row.brand || 'Krishna Footwear'}</span>
         </div>
       )
     },
@@ -141,22 +141,22 @@ export const Products = () => {
     {
       header: 'Price',
       accessor: 'price',
-      render: (row) => `$${parseFloat(row.price).toFixed(2)}`
+      render: (row) => `₹${parseFloat(row.price).toFixed(2)}`
     },
     {
       header: 'Discount Price',
       accessor: 'discount_price',
-      render: (row) => row.discount_price ? `$${parseFloat(row.discount_price).toFixed(2)}` : '-'
+      render: (row) => row.discount_price ? `₹${parseFloat(row.discount_price).toFixed(2)}` : '-'
     },
     {
       header: 'Stock',
       accessor: 'total_stock',
       render: (row) => {
         const stock = row.total_stock ?? 0;
-        let color = '#10b981';
+        let color = 'var(--bottle)';
         let label = `${stock} in stock`;
-        if (stock === 0) { color = '#ef4444'; label = 'Out of stock'; }
-        else if (stock <= 5) { color = '#f59e0b'; label = `${stock} Low Stock`; }
+        if (stock === 0) { color = 'var(--rose)'; label = 'Out of stock'; }
+        else if (stock <= 5) { color = 'var(--brass)'; label = `${stock} Low Stock`; }
 
         return (
           <span style={{ fontWeight: '700', color, fontSize: '0.8125rem' }}>
@@ -170,7 +170,7 @@ export const Products = () => {
       accessor: 'is_active',
       render: (row) => {
         if (row.is_deleted) {
-          return <span style={{ padding: '3px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', backgroundColor: '#fef2f2', color: '#ef4444' }}>Deleted</span>;
+          return <span style={{ padding: '3px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700', backgroundColor: 'rgba(185, 122, 102, 0.1)', color: 'var(--rose)' }}>Deleted</span>;
         }
         return (
           <span style={{
@@ -178,8 +178,8 @@ export const Products = () => {
             borderRadius: '6px',
             fontSize: '0.75rem',
             fontWeight: '700',
-            backgroundColor: row.is_active ? '#ecfdf5' : '#f1f5f9',
-            color: row.is_active ? '#10b981' : '#64748b'
+            backgroundColor: row.is_active ? 'rgba(46, 70, 53, 0.1)' : 'var(--parchment-soft)',
+            color: row.is_active ? 'var(--bottle)' : 'var(--ink-soft)'
           }}>
             {row.is_active ? 'Active' : 'Disabled'}
           </span>
@@ -199,7 +199,7 @@ export const Products = () => {
           <button
             onClick={() => setPreviewProduct(row)}
             title="Preview Product"
-            style={{ background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: '4px' }}
+            style={{ background: 'none', border: 'none', color: 'var(--brass)', cursor: 'pointer', padding: '4px' }}
           >
             <Eye size={16} />
           </button>
@@ -209,7 +209,7 @@ export const Products = () => {
               <button
                 onClick={() => navigate(`/products/edit/${row.id}`)}
                 title="Edit Product"
-                style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--ink-soft)', cursor: 'pointer', padding: '4px' }}
               >
                 <Edit2 size={16} />
               </button>
@@ -217,7 +217,7 @@ export const Products = () => {
               <button
                 onClick={() => handleToggleStatus(row.id, row.is_active)}
                 title={row.is_active ? 'Disable' : 'Enable'}
-                style={{ background: 'none', border: 'none', color: row.is_active ? '#f59e0b' : '#10b981', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', color: row.is_active ? 'var(--brass)' : 'var(--bottle)', cursor: 'pointer', padding: '4px' }}
               >
                 <Power size={16} />
               </button>
@@ -225,7 +225,7 @@ export const Products = () => {
               <button
                 onClick={() => handleDuplicate(row.id)}
                 title="Duplicate Product"
-                style={{ background: 'none', border: 'none', color: '#8b5cf6', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--chestnut)', cursor: 'pointer', padding: '4px' }}
               >
                 <Copy size={16} />
               </button>
@@ -233,7 +233,7 @@ export const Products = () => {
               <button
                 onClick={() => setDeletingProductId(row.id)}
                 title="Soft Delete Product"
-                style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                style={{ background: 'none', border: 'none', color: 'var(--rose)', cursor: 'pointer', padding: '4px' }}
               >
                 <Trash2 size={16} />
               </button>
@@ -242,7 +242,7 @@ export const Products = () => {
             <button
               onClick={() => handleRestore(row.id)}
               title="Restore Product"
-              style={{ background: 'none', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+              style={{ background: 'none', border: 'none', color: 'var(--bottle)', cursor: 'pointer', padding: '4px' }}
             >
               <RotateCcw size={16} />
             </button>
@@ -258,10 +258,10 @@ export const Products = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: '0 0 4px', fontFamily: '"Rozha One", serif' }}>
             Products Catalog
           </h1>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: 0 }}>
             Manage footwear catalog, pricing, variants, and Cloudinary media
           </p>
         </div>
@@ -270,8 +270,8 @@ export const Products = () => {
           to="/products/add"
           style={{
             padding: '10px 20px',
-            backgroundColor: 'hsl(215, 80%, 20%)',
-            color: '#ffffff',
+            backgroundColor: 'var(--chestnut)',
+            color: 'var(--parchment)',
             borderRadius: '8px',
             textDecoration: 'none',
             fontWeight: '700',
@@ -287,10 +287,10 @@ export const Products = () => {
 
       {/* Filter Bar */}
       <div style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--card)',
         padding: '16px 20px',
         borderRadius: '12px',
-        border: '1px solid #e2e8f0',
+        border: '1px solid var(--line)',
         display: 'flex',
         gap: '16px',
         flexWrap: 'wrap',
@@ -307,18 +307,20 @@ export const Products = () => {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#f8fafc', fontSize: '0.875rem' }}
+          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--parchment-soft)', fontSize: '0.875rem' }}
         >
           <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
+          {categories
+            .filter(c => ['men', 'women', 'kids', 'jutti'].includes(c.slug?.toLowerCase()))
+            .map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
         </select>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#f8fafc', fontSize: '0.875rem' }}
+          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--parchment-soft)', fontSize: '0.875rem' }}
         >
           <option value="">All Statuses</option>
           <option value="active">Active Only</option>
@@ -362,11 +364,11 @@ export const Products = () => {
         <Modal isOpen={!!previewProduct} onClose={() => setPreviewProduct(null)} title={`Preview: ${previewProduct.name}`} maxWidth="680px">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', textAlign: 'left' }}>
             {/* Primary Image */}
-            <div style={{ width: '100%', height: '260px', backgroundColor: '#f1f5f9', borderRadius: '12px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '100%', height: '260px', backgroundColor: 'var(--parchment-soft)', borderRadius: '12px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {previewProduct.primary_image ? (
                 <img src={previewProduct.primary_image} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               ) : (
-                <span style={{ color: '#94a3b8' }}>No Image Uploaded</span>
+                <span style={{ color: 'var(--ink-soft)' }}>No Image Uploaded</span>
               )}
             </div>
 
@@ -374,15 +376,15 @@ export const Products = () => {
               <div><strong>SKU:</strong> {previewProduct.sku}</div>
               <div><strong>Brand:</strong> {previewProduct.brand}</div>
               <div><strong>Category:</strong> {previewProduct.category_name || 'N/A'}</div>
-              <div><strong>Base Price:</strong> ${parseFloat(previewProduct.price).toFixed(2)}</div>
-              {previewProduct.discount_price && <div><strong>Discount Price:</strong> ${parseFloat(previewProduct.discount_price).toFixed(2)}</div>}
+              <div><strong>Base Price:</strong> ₹{parseFloat(previewProduct.price).toFixed(2)}</div>
+              {previewProduct.discount_price && <div><strong>Discount Price:</strong> ₹{parseFloat(previewProduct.discount_price).toFixed(2)}</div>}
               <div><strong>Total Stock:</strong> {previewProduct.total_stock} units</div>
             </div>
 
             {previewProduct.short_description && (
               <div>
-                <strong>Short Description:</strong>
-                <p style={{ margin: '4px 0', color: '#475569', fontSize: '0.875rem' }}>{previewProduct.short_description}</p>
+                <strong style={{ color: 'var(--ink)' }}>Short Description:</strong>
+                <p style={{ margin: '4px 0', color: 'var(--ink-soft)', fontSize: '0.875rem' }}>{previewProduct.short_description}</p>
               </div>
             )}
           </div>

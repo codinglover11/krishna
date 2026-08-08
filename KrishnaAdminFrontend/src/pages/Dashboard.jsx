@@ -71,8 +71,8 @@ export const Dashboard = () => {
       
       {/* Top Welcome Header */}
       <div style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid #e2e8f0',
+        backgroundColor: 'var(--card)',
+        border: '1px solid var(--line)',
         borderRadius: '12px',
         padding: '24px 32px',
         display: 'flex',
@@ -80,10 +80,10 @@ export const Dashboard = () => {
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '16px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+        boxShadow: 'var(--shadow)'
       }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'hsl(215, 80%, 20%)', margin: '0 0 6px' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--chestnut)', margin: '0 0 6px', fontFamily: '"Rozha One", serif' }}>
             Executive Dashboard
           </h1>
           <p style={{ color: '#64748b', fontSize: '0.9375rem', margin: 0 }}>
@@ -93,8 +93,8 @@ export const Dashboard = () => {
         <div style={{
           padding: '10px 18px',
           borderRadius: '8px',
-          backgroundColor: 'rgba(235, 94, 85, 0.1)',
-          color: 'hsl(30, 90%, 55%)',
+          backgroundColor: 'var(--chestnut)',
+          color: 'var(--parchment)',
           fontWeight: '700',
           fontSize: '0.875rem',
           display: 'flex',
@@ -109,7 +109,7 @@ export const Dashboard = () => {
       {(alerts.pending_orders_count > 0 || alerts.low_stock_count > 0 || alerts.out_of_stock_count > 0) && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
           {alerts.pending_orders_count > 0 && (
-            <div style={{ padding: '16px 20px', backgroundColor: '#fffbe finished', backgroundColor: '#fef3c7', borderRadius: '10px', border: '1px solid #fcd34d', color: '#92400e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ padding: '16px 20px', backgroundColor: '#fef3c7', borderRadius: '10px', border: '1px solid #fcd34d', color: '#92400e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Clock size={20} color="#d97706" />
                 <div>
@@ -155,111 +155,111 @@ export const Dashboard = () => {
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
           {/* Revenue Group */}
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Total Revenue</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#10b981', margin: '6px 0 0' }}>${parseFloat(rev.total_revenue || 0).toFixed(2)}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Total Revenue</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--bottle)', margin: '6px 0 0' }}>₹{parseFloat(rev.total_revenue || 0).toFixed(2)}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Monthly Revenue</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#10b981', margin: '6px 0 0' }}>${parseFloat(rev.monthly_revenue || 0).toFixed(2)}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Monthly Revenue</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--bottle)', margin: '6px 0 0' }}>₹{parseFloat(rev.monthly_revenue || 0).toFixed(2)}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Today's Revenue</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#10b981', margin: '6px 0 0' }}>${parseFloat(rev.today_revenue || 0).toFixed(2)}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Today's Revenue</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--bottle)', margin: '6px 0 0' }}>₹{parseFloat(rev.today_revenue || 0).toFixed(2)}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Average Order Value</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#2563eb', margin: '6px 0 0' }}>${parseFloat(rev.avg_order_value || 0).toFixed(2)}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Average Order Value</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--brass)', margin: '6px 0 0' }}>₹{parseFloat(rev.avg_order_value || 0).toFixed(2)}</h2>
           </div>
 
           {/* Orders Group */}
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Total Orders</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#0f172a', margin: '6px 0 0' }}>{ord.total_orders || 0}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Total Orders</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--ink)', margin: '6px 0 0' }}>{ord.total_orders || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#d97706' }}>Pending Orders</span>
             <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#d97706', margin: '6px 0 0' }}>{ord.pending_orders || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#10b981' }}>Delivered Orders</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#10b981', margin: '6px 0 0' }}>{ord.delivered_orders || 0}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--bottle)' }}>Delivered Orders</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--bottle)', margin: '6px 0 0' }}>{ord.delivered_orders || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#ef4444' }}>Cancelled Orders</span>
             <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#ef4444', margin: '6px 0 0' }}>{ord.cancelled_orders || 0}</h2>
           </div>
 
           {/* Catalog & User Group */}
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Total Products</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#0f172a', margin: '6px 0 0' }}>{prod.total_products || 0}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Total Products</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--ink)', margin: '6px 0 0' }}>{prod.total_products || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#10b981' }}>Active Products</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#10b981', margin: '6px 0 0' }}>{prod.active_products || 0}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--bottle)' }}>Active Products</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--bottle)', margin: '6px 0 0' }}>{prod.active_products || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#f59e0b' }}>Low Stock (≤5)</span>
             <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#f59e0b', margin: '6px 0 0' }}>{prod.low_stock_products || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#ef4444' }}>Out of Stock</span>
             <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#ef4444', margin: '6px 0 0' }}>{prod.out_of_stock_products || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Total Categories</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#0f172a', margin: '6px 0 0' }}>{cat.total_categories || 0}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Total Categories</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--ink)', margin: '6px 0 0' }}>{cat.total_categories || 0}</h2>
           </div>
 
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#64748b' }}>Total Customers</span>
-            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: '#2563eb', margin: '6px 0 0' }}>{cust.total_customers || 0}</h2>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <span style={{ fontSize: '0.8125rem', fontWeight: '600', color: 'var(--ink-soft)' }}>Total Customers</span>
+            <h2 style={{ fontSize: '1.625rem', fontWeight: '800', color: 'var(--brass)', margin: '6px 0 0' }}>{cust.total_customers || 0}</h2>
           </div>
         </div>
       </div>
 
       {/* Quick Action Shortcut Cards */}
       <div>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', marginBottom: '16px' }}>Quick Administrative Shortcuts</h3>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', marginBottom: '16px' }}>Quick Administrative Shortcuts</h3>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
-          <Link to="/products/add" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+          <Link to="/products/add" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
             <PlusCircle size={24} color="#2563eb" />
             <strong style={{ fontSize: '0.875rem' }}>Add Product</strong>
           </Link>
 
-          <Link to="/categories" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+          <Link to="/categories" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
             <FolderTree size={24} color="#10b981" />
             <strong style={{ fontSize: '0.875rem' }}>Add Category</strong>
           </Link>
 
-          <Link to="/orders" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+          <Link to="/orders" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
             <ShoppingCart size={24} color="#f59e0b" />
             <strong style={{ fontSize: '0.875rem' }}>View Orders</strong>
           </Link>
 
-          <Link to="/customers" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+          <Link to="/customers" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
             <Users size={24} color="#8b5cf6" />
             <strong style={{ fontSize: '0.875rem' }}>View Customers</strong>
           </Link>
 
-          <Link to="/offers" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+          <Link to="/offers" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
             <Tag size={24} color="#ec4899" />
             <strong style={{ fontSize: '0.875rem' }}>Manage Offers</strong>
           </Link>
 
-          <Link to="/coupons" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
+          <Link to="/coupons" style={{ padding: '16px', backgroundColor: '#ffffff', borderRadius: '10px', border: '1px solid #e2e8f0', textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.2s' }}>
             <Ticket size={24} color="#06b6d4" />
             <strong style={{ fontSize: '0.875rem' }}>Manage Coupons</strong>
           </Link>
@@ -268,24 +268,24 @@ export const Dashboard = () => {
 
       {/* Analytics Charts Grid */}
       <div>
-        <h3 style={{ fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', marginBottom: '16px' }}>Business Trends & Distributions</h3>
+        <h3 style={{ fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', marginBottom: '16px' }}>Business Trends & Distributions</h3>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
           
           {/* Monthly Revenue Bar Chart */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <BarChart
-              title="Monthly Revenue Trend ($)"
+              title="Monthly Revenue Trend (₹)"
               data={charts?.monthlySales || []}
               xKey="month_label"
               yKey="revenue"
               color="#2563eb"
-              formatValue={(v) => `$${v.toFixed(0)}`}
+              formatValue={(v) => `₹${v.toFixed(0)}`}
             />
           </div>
 
           {/* Orders by Month Line Chart */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <LineChart
               title="Orders Volume Trend"
               data={charts?.monthlySales || []}
@@ -297,7 +297,7 @@ export const Dashboard = () => {
           </div>
 
           {/* Product Category Distribution */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <DonutChart
               title="Product Distribution by Category"
               data={charts?.categoryDistribution || []}
@@ -308,7 +308,7 @@ export const Dashboard = () => {
           </div>
 
           {/* Order Status Distribution */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
             <DonutChart
               title="Order Status Breakdown"
               data={charts?.orderStatusDistribution || []}
@@ -325,24 +325,24 @@ export const Dashboard = () => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '24px' }}>
         
         {/* 1. Recent Orders Feed */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#0f172a' }}>Recent Orders</h4>
-            <Link to="/orders" style={{ fontSize: '0.8125rem', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: 'var(--ink)' }}>Recent Orders</h4>
+            <Link to="/orders" style={{ fontSize: '0.8125rem', color: 'var(--brass)', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
           </div>
 
           {recentOrders.length === 0 ? (
-            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No orders placed yet.</p>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem' }}>No orders placed yet.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {recentOrders.map((o) => (
-                <div key={o.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
+                <div key={o.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: 'var(--parchment-soft)', borderRadius: '8px' }}>
                   <div>
-                    <strong style={{ display: 'block', fontSize: '0.875rem', color: '#0f172a' }}>{o.order_number || o.id.slice(0, 8)}</strong>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{o.customer_name}</span>
+                    <strong style={{ display: 'block', fontSize: '0.875rem', color: 'var(--ink)' }}>{o.order_number || o.id.slice(0, 8)}</strong>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{o.customer_name}</span>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ display: 'block', fontWeight: '700', fontSize: '0.875rem', color: '#0f172a' }}>${parseFloat(o.total_price).toFixed(2)}</span>
+                    <span style={{ display: 'block', fontWeight: '700', fontSize: '0.875rem', color: 'var(--ink)' }}>₹{parseFloat(o.total_price).toFixed(2)}</span>
                     <span style={{ fontSize: '0.75rem', fontWeight: '600', color: o.status === 'Delivered' ? '#10b981' : '#d97706' }}>{o.status}</span>
                   </div>
                 </div>
@@ -352,21 +352,21 @@ export const Dashboard = () => {
         </div>
 
         {/* 2. Recent Customers Feed */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#0f172a' }}>Recently Registered Customers</h4>
-            <Link to="/customers" style={{ fontSize: '0.8125rem', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: 'var(--ink)' }}>Recently Registered Customers</h4>
+            <Link to="/customers" style={{ fontSize: '0.8125rem', color: 'var(--brass)', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
           </div>
 
           {recentCustomers.length === 0 ? (
-            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No customers registered yet.</p>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem' }}>No customers registered yet.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {recentCustomers.map((c) => (
-                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
+                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: 'var(--parchment-soft)', borderRadius: '8px' }}>
                   <div>
-                    <strong style={{ display: 'block', fontSize: '0.875rem', color: '#0f172a' }}>{c.name}</strong>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{c.email}</span>
+                    <strong style={{ display: 'block', fontSize: '0.875rem', color: 'var(--ink)' }}>{c.name}</strong>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{c.email}</span>
                   </div>
                   <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
                     {new Date(c.created_at).toLocaleDateString()}
@@ -378,28 +378,28 @@ export const Dashboard = () => {
         </div>
 
         {/* 3. Recently Added Products Feed */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#0f172a' }}>Recently Added Products</h4>
-            <Link to="/products" style={{ fontSize: '0.8125rem', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: 'var(--ink)' }}>Recently Added Products</h4>
+            <Link to="/products" style={{ fontSize: '0.8125rem', color: 'var(--brass)', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
           </div>
 
           {recentProducts.length === 0 ? (
-            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No products added yet.</p>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem' }}>No products added yet.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {recentProducts.map((p) => (
-                <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: '#f8fafc', borderRadius: '8px' }}>
+                <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', backgroundColor: 'var(--parchment-soft)', borderRadius: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ width: '36px', height: '36px', borderRadius: '6px', backgroundColor: '#e2e8f0', overflow: 'hidden', flexShrink: 0 }}>
                       {p.primary_image ? <img src={p.primary_image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Package size={18} color="#94a3b8" />}
                     </div>
                     <div>
-                      <strong style={{ display: 'block', fontSize: '0.875rem', color: '#0f172a' }}>{p.name}</strong>
-                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{p.category_name || 'Uncategorized'}</span>
+                      <strong style={{ display: 'block', fontSize: '0.875rem', color: 'var(--ink)' }}>{p.name}</strong>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{p.category_name || 'Uncategorized'}</span>
                     </div>
                   </div>
-                  <span style={{ fontWeight: '700', fontSize: '0.875rem', color: '#0f172a' }}>${parseFloat(p.price).toFixed(2)}</span>
+                  <span style={{ fontWeight: '700', fontSize: '0.875rem', color: 'var(--ink)' }}>₹{parseFloat(p.price).toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -407,25 +407,25 @@ export const Dashboard = () => {
         </div>
 
         {/* 4. Latest Customer Reviews Feed */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#0f172a' }}>Latest Product Reviews</h4>
-            <Link to="/reviews" style={{ fontSize: '0.8125rem', color: '#2563eb', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
+            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: 'var(--ink)' }}>Latest Product Reviews</h4>
+            <Link to="/reviews" style={{ fontSize: '0.8125rem', color: 'var(--brass)', fontWeight: '600', textDecoration: 'none' }}>View All →</Link>
           </div>
 
           {recentReviews.length === 0 ? (
-            <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No customer reviews posted yet.</p>
+            <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem' }}>No customer reviews posted yet.</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {recentReviews.map((r) => (
-                <div key={r.id} style={{ padding: '10px 12px', backgroundColor: '#f8fafc', borderRadius: '8px', fontSize: '0.8125rem' }}>
+                <div key={r.id} style={{ padding: '10px 12px', backgroundColor: 'var(--parchment-soft)', borderRadius: '8px', fontSize: '0.8125rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                    <strong style={{ color: '#0f172a' }}>{r.customer_name}</strong>
+                    <strong style={{ color: 'var(--ink)' }}>{r.customer_name}</strong>
                     <div style={{ color: '#f59e0b', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '2px' }}>
                       <Star size={12} fill="#f59e0b" /> {r.rating}/5
                     </div>
                   </div>
-                  <span style={{ color: '#64748b', display: 'block', fontSize: '0.75rem' }}>on {r.product_name}</span>
+                  <span style={{ color: 'var(--ink-soft)', display: 'block', fontSize: '0.75rem' }}>on {r.product_name}</span>
                   {r.comment && <p style={{ margin: '4px 0 0', color: '#334155', fontStyle: 'italic' }}>"{r.comment}"</p>}
                 </div>
               ))}

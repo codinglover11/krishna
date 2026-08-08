@@ -89,8 +89,8 @@ export const Settings = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Store Configuration & Settings</h1>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage brand identity, contact information, return policy, and store content</p>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>Store Configuration & Settings</h1>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage brand identity, contact information, return policy, and store content</p>
         </div>
 
         <button
@@ -98,8 +98,8 @@ export const Settings = () => {
           disabled={isSaving}
           style={{
             padding: '10px 22px',
-            backgroundColor: '#10b981',
-            color: '#fff',
+            backgroundColor: 'var(--bottle)',
+            color: 'var(--parchment)',
             border: 'none',
             borderRadius: '8px',
             fontWeight: '700',
@@ -117,9 +117,9 @@ export const Settings = () => {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {/* 1. General Brand Profile */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Store size={20} color="#2563eb" /> Brand Profile
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ margin: '0 0 8px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Store size={20} color="var(--brass)" /> Brand Profile
           </h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -145,16 +145,16 @@ export const Settings = () => {
           </div>
 
           {formData.storeLogo && (
-            <div style={{ width: '120px', height: '60px', borderRadius: '8px', border: '1px solid #e2e8f0', padding: '6px', backgroundColor: '#f8fafc', overflow: 'hidden' }}>
+            <div style={{ width: '120px', height: '60px', borderRadius: '8px', border: '1px solid var(--line)', padding: '6px', backgroundColor: 'var(--parchment-soft)', overflow: 'hidden' }}>
               <img src={formData.storeLogo} alt="Logo Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
           )}
         </div>
 
         {/* 2. Contact Information */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Mail size={20} color="#10b981" /> Contact Information
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ margin: '0 0 8px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Mail size={20} color="var(--bottle)" /> Contact Information
           </h3>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -192,9 +192,9 @@ export const Settings = () => {
         </div>
 
         {/* 3. Social Links & Policies */}
-        <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FileText size={20} color="#f59e0b" /> Policies & Brand Content
+        <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ margin: '0 0 8px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FileText size={20} color="var(--chestnut)" /> Policies & Brand Content
           </h3>
 
           <div>

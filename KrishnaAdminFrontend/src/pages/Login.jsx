@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { toast } from '../stores/toastStore';
 import { Mail, Shield, KeyRound, ArrowLeft, RefreshCw } from 'lucide-react';
@@ -7,7 +7,7 @@ import { Mail, Shield, KeyRound, ArrowLeft, RefreshCw } from 'lucide-react';
 export const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { sendLoginOTP, login, isLoading } = useAuthStore();
+  const { sendLoginOTP, login, isLoading, isAuthenticated } = useAuthStore();
 
   const [step, setStep] = useState(1); // Step 1: Input Email, Step 2: Input OTP
   const [email, setEmail] = useState('');
@@ -44,6 +44,10 @@ export const Login = () => {
       // Error is handled by authStore
     }
   };
+
+  if (isAuthenticated) {
+    return <Navigate to={from} replace />;
+  }
 
   return (
     <div style={{

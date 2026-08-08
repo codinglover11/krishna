@@ -57,8 +57,8 @@ export const Customers = () => {
       accessor: 'name',
       render: (row) => (
         <div>
-          <strong style={{ display: 'block', color: '#0f172a' }}>{row.name}</strong>
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.email}</span>
+          <strong style={{ display: 'block', color: 'var(--ink)' }}>{row.name}</strong>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{row.email}</span>
         </div>
       )
     },
@@ -71,7 +71,7 @@ export const Customers = () => {
       header: 'Total Orders',
       accessor: 'total_orders',
       render: (row) => (
-        <span style={{ fontWeight: '700', color: '#2563eb' }}>
+        <span style={{ fontWeight: '700', color: 'var(--brass)' }}>
           {row.total_orders || 0} orders
         </span>
       )
@@ -80,8 +80,8 @@ export const Customers = () => {
       header: 'Total Spent',
       accessor: 'total_spent',
       render: (row) => (
-        <span style={{ fontWeight: '700', color: '#10b981' }}>
-          ${parseFloat(row.total_spent || 0).toFixed(2)}
+        <span style={{ fontWeight: '700', color: 'var(--bottle)' }}>
+          ₹{parseFloat(row.total_spent || 0).toFixed(2)}
         </span>
       )
     },
@@ -94,8 +94,8 @@ export const Customers = () => {
           borderRadius: '6px',
           fontSize: '0.75rem',
           fontWeight: '700',
-          backgroundColor: row.is_active ? '#ecfdf5' : '#fef2f2',
-          color: row.is_active ? '#10b981' : '#ef4444'
+          backgroundColor: row.is_active ? 'rgba(46, 70, 53, 0.1)' : 'rgba(185, 122, 102, 0.1)',
+          color: row.is_active ? 'var(--bottle)' : 'var(--rose)'
         }}>
           {row.is_active ? 'Active' : 'Inactive'}
         </span>
@@ -114,14 +114,14 @@ export const Customers = () => {
           <Link
             to={`/customers/${row.id}`}
             title="View Customer Profile & History"
-            style={{ color: '#2563eb', padding: '4px' }}
+            style={{ color: 'var(--brass)', padding: '4px' }}
           >
             <Eye size={16} />
           </Link>
           <button
             onClick={() => handleToggleStatus(row.id, row.is_active)}
             title={row.is_active ? 'Deactivate Account' : 'Activate Account'}
-            style={{ background: 'none', border: 'none', color: row.is_active ? '#ef4444' : '#10b981', cursor: 'pointer', padding: '4px' }}
+            style={{ background: 'none', border: 'none', color: row.is_active ? 'var(--rose)' : 'var(--bottle)', cursor: 'pointer', padding: '4px' }}
           >
             <Power size={16} />
           </button>
@@ -135,20 +135,20 @@ export const Customers = () => {
       
       {/* Header */}
       <div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: '0 0 4px', fontFamily: '"Rozha One", serif' }}>
           Customer Management
         </h1>
-        <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>
+        <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: 0 }}>
           Monitor customer accounts, spending statistics, shipping address books, and active status
         </p>
       </div>
 
       {/* Filter Bar */}
       <div style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--card)',
         padding: '16px 20px',
         borderRadius: '12px',
-        border: '1px solid #e2e8f0',
+        border: '1px solid var(--line)',
         display: 'flex',
         gap: '16px',
         alignItems: 'center',
@@ -165,7 +165,7 @@ export const Customers = () => {
         <select
           value={isActiveFilter}
           onChange={(e) => setIsActiveFilter(e.target.value)}
-          style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#f8fafc', fontSize: '0.875rem' }}
+          style={{ padding: '9px 14px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--parchment-soft)', fontSize: '0.875rem' }}
         >
           <option value="">All Customer Statuses</option>
           <option value="true">Active Accounts Only</option>

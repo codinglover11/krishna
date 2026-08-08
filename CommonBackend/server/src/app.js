@@ -1,4 +1,5 @@
 const express = require('express');
+// Trigger restart
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -32,6 +33,7 @@ const settingsRoutes = require('./routes/settings');
 const notificationRoutes = require('./routes/notifications');
 const auditLogRoutes = require('./routes/auditLogs');
 const { sendSuccess } = require('./utils/response');
+const { pool } = require('./config/db');
 
 const app = express();
 
@@ -54,6 +56,32 @@ app.get('/health', (req, res) => {
   return sendSuccess(res, 200, { status: 'ok' }, 'Service is healthy');
 });
 
+// Temporary migration route
+app.get('/api/v1/_migrate', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(`ALTER TABLE addresses ADD COLUMN IF NOT EXISTS latitude DECIMAL(10, 8)`);
+    await client.query(`ALTER TABLE addresses ADD COLUMN IF NOT EXISTS longitude DECIMAL(11, 8)`);
+    await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_distance DECIMAL(10, 2)`);
+    await client.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_charge DECIMAL(10, 2) DEFAULT 0.00`);
+    await client.query(`ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_payment_status_check`);
+    await client.query(`ALTER TABLE orders ADD CONSTRAINT orders_payment_status_check CHECK (payment_status IN ('Pending', 'Pending_Verification', 'Paid', 'Failed', 'Refunded'))`);
+    
+    // Add missing columns to users
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20)`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT`);
+    await client.query('COMMIT');
+    res.json({ success: true, message: 'Migration 020 applied successfully' });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ success: false, error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+// API Routes
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', adminRoutes);

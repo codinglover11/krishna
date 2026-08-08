@@ -93,13 +93,13 @@ export const Orders = () => {
   };
 
   const renderStatusBadge = (st) => {
-    let bg = '#f1f5f9';
-    let fg = '#475569';
+    let bg = 'var(--parchment-soft)';
+    let fg = 'var(--ink-soft)';
 
-    if (['Confirmed', 'Packed'].includes(st)) { bg = '#eff6ff'; fg = '#2563eb'; }
-    else if (['Shipped', 'Out For Delivery'].includes(st)) { bg = '#fffbe finished'; bg = '#fef3c7'; fg = '#d97706'; }
-    else if (st === 'Delivered') { bg = '#ecfdf5'; fg = '#10b981'; }
-    else if (['Cancelled', 'Returned', 'Refunded'].includes(st)) { bg = '#fef2f2'; fg = '#ef4444'; }
+    if (['Confirmed', 'Packed'].includes(st)) { bg = 'rgba(37, 99, 235, 0.1)'; fg = 'var(--brass)'; }
+    else if (['Shipped', 'Out For Delivery'].includes(st)) { bg = 'rgba(217, 119, 6, 0.1)'; fg = 'var(--brass)'; }
+    else if (st === 'Delivered') { bg = 'rgba(46, 70, 53, 0.1)'; fg = 'var(--bottle)'; }
+    else if (['Cancelled', 'Returned', 'Refunded'].includes(st)) { bg = 'rgba(185, 122, 102, 0.1)'; fg = 'var(--rose)'; }
 
     return (
       <span style={{ padding: '4px 10px', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: '700', backgroundColor: bg, color: fg }}>
@@ -113,7 +113,7 @@ export const Orders = () => {
       header: 'Order Number',
       accessor: 'order_number',
       render: (row) => (
-        <Link to={`/orders/${row.id}`} style={{ fontWeight: '700', color: '#2563eb', textDecoration: 'none' }}>
+        <Link to={`/orders/${row.id}`} style={{ fontWeight: '700', color: 'var(--brass)', textDecoration: 'none' }}>
           {row.order_number || row.id.slice(0, 8)}
         </Link>
       )
@@ -123,9 +123,9 @@ export const Orders = () => {
       accessor: 'customer_name',
       render: (row) => (
         <div>
-          <strong style={{ display: 'block', color: '#0f172a' }}>{row.customer_name}</strong>
-          <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block' }}>{row.customer_email}</span>
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>📞 {row.customer_phone || 'N/A'}</span>
+          <strong style={{ display: 'block', color: 'var(--ink)' }}>{row.customer_name}</strong>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)', display: 'block' }}>{row.customer_email}</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>📞 {row.customer_phone || 'N/A'}</span>
         </div>
       )
     },
@@ -139,8 +139,8 @@ export const Orders = () => {
       accessor: 'total_price',
       render: (row) => (
         <div>
-          <strong style={{ color: '#0f172a', display: 'block' }}>${parseFloat(row.total_price).toFixed(2)}</strong>
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{row.payment_method || 'COD'}</span>
+          <strong style={{ color: 'var(--ink)', display: 'block' }}>₹{parseFloat(row.total_price).toFixed(2)}</strong>
+          <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>{row.payment_method || 'COD'}</span>
         </div>
       )
     },
@@ -153,8 +153,8 @@ export const Orders = () => {
           fontWeight: '700',
           padding: '2px 8px',
           borderRadius: '4px',
-          backgroundColor: row.payment_status === 'Paid' ? '#ecfdf5' : '#f1f5f9',
-          color: row.payment_status === 'Paid' ? '#10b981' : '#64748b'
+          backgroundColor: row.payment_status === 'Paid' ? 'rgba(46, 70, 53, 0.1)' : 'var(--parchment-soft)',
+          color: row.payment_status === 'Paid' ? 'var(--bottle)' : 'var(--ink-soft)'
         }}>
           {row.payment_status}
         </span>
@@ -178,14 +178,14 @@ export const Orders = () => {
           <Link
             to={`/orders/${row.id}`}
             title="View Order Details"
-            style={{ color: '#2563eb', padding: '4px' }}
+            style={{ color: 'var(--brass)', padding: '4px' }}
           >
             <Eye size={16} />
           </Link>
           <button
             onClick={() => openStatusModal(row)}
             title="Update Order Status"
-            style={{ background: 'none', border: 'none', color: '#d97706', cursor: 'pointer', padding: '4px' }}
+            style={{ background: 'none', border: 'none', color: 'var(--chestnut)', cursor: 'pointer', padding: '4px' }}
           >
             <Edit3 size={16} />
           </button>
@@ -199,20 +199,20 @@ export const Orders = () => {
       
       {/* Header */}
       <div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: '0 0 4px' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: '0 0 4px', fontFamily: '"Rozha One", serif' }}>
           Order Management
         </h1>
-        <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>
+        <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: 0 }}>
           Manage customer orders, track fulfillment status, and log order timeline entries
         </p>
       </div>
 
       {/* Filter Bar */}
       <div style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: 'var(--card)',
         padding: '16px 20px',
         borderRadius: '12px',
-        border: '1px solid #e2e8f0',
+        border: '1px solid var(--line)',
         display: 'flex',
         gap: '12px',
         alignItems: 'center',
@@ -229,7 +229,7 @@ export const Orders = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#f8fafc', fontSize: '0.875rem' }}
+          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--parchment-soft)', fontSize: '0.875rem' }}
         >
           <option value="">All Order Statuses</option>
           {ALLOWED_STATUSES.map((st) => (
@@ -240,7 +240,7 @@ export const Orders = () => {
         <select
           value={paymentFilter}
           onChange={(e) => setPaymentFilter(e.target.value)}
-          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#f8fafc', fontSize: '0.875rem' }}
+          style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--parchment-soft)', fontSize: '0.875rem' }}
         >
           <option value="">All Payment Statuses</option>
           <option value="Pending">Pending</option>
@@ -249,20 +249,20 @@ export const Orders = () => {
           <option value="Refunded">Refunded</option>
         </select>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', color: '#64748b' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.875rem', color: 'var(--ink-soft)' }}>
           <span>From:</span>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.875rem' }}
+            style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.875rem', backgroundColor: 'var(--card)' }}
           />
           <span>To:</span>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.875rem' }}
+            style={{ padding: '8px 10px', borderRadius: '8px', border: '1px solid var(--line)', fontSize: '0.875rem', backgroundColor: 'var(--card)' }}
           />
         </div>
       </div>
@@ -294,7 +294,7 @@ export const Orders = () => {
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
-                style={{ padding: '10px 18px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#fff', cursor: 'pointer' }}
+                style={{ padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--card)', cursor: 'pointer', color: 'var(--ink)' }}
               >
                 Cancel
               </button>
@@ -302,7 +302,7 @@ export const Orders = () => {
                 type="button"
                 onClick={handleUpdateStatus}
                 disabled={isUpdating}
-                style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', backgroundColor: 'hsl(215, 80%, 20%)', color: '#fff', fontWeight: '700', cursor: 'pointer' }}
+                style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--chestnut)', color: 'var(--parchment)', fontWeight: '700', cursor: 'pointer' }}
               >
                 {isUpdating ? 'Updating...' : 'Update Status'}
               </button>
@@ -311,8 +311,8 @@ export const Orders = () => {
         >
           <form style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'left' }}>
             <div>
-              <p style={{ margin: '0 0 12px', fontSize: '0.875rem', color: '#64748b' }}>
-                Updating status for order placed by <strong>{selectedOrder.customer_name}</strong> on {new Date(selectedOrder.created_at).toLocaleDateString()}.
+              <p style={{ margin: '0 0 12px', fontSize: '0.875rem', color: 'var(--ink-soft)' }}>
+                Updating status for order placed by <strong style={{ color: 'var(--ink)' }}>{selectedOrder.customer_name}</strong> on {new Date(selectedOrder.created_at).toLocaleDateString()}.
               </p>
             </div>
 

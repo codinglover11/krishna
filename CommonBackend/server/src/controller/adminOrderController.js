@@ -105,7 +105,7 @@ const adminOrderController = {
         `SELECT o.*, u.id as user_id, u.name as customer_name, u.email as customer_email
          FROM orders o
          JOIN users u ON o.user_id = u.id
-         WHERE o.id = $1 OR o.order_number = $1`,
+         WHERE o.id::text = $1 OR o.order_number = $1`,
         [id]
       );
       const order = orderRes.rows[0];
@@ -201,9 +201,9 @@ const adminOrderController = {
 
       // Record Status History Entry
       await client.query(
-        `INSERT INTO order_status_history (order_id, status, notes, changed_by)
-         VALUES ($1, $2, $3, $4)`,
-        [id, status, notes || `Status updated from ${prevStatus} to ${status}`, adminUser.id]
+        `INSERT INTO order_status_history (order_id, status, notes)
+         VALUES ($1, $2, $3)`,
+        [id, status, notes || `Status updated from ${prevStatus} to ${status}`]
       );
 
       // Create Notification for Customer

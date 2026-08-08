@@ -88,10 +88,10 @@ export const OrderDetail = () => {
       {/* Top Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Link to="/orders" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#64748b', textDecoration: 'none', fontWeight: '600', fontSize: '0.875rem' }}>
+          <Link to="/orders" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--ink-soft)', textDecoration: 'none', fontWeight: '600', fontSize: '0.875rem' }}>
             <ArrowLeft size={16} /> Back to Orders
           </Link>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>
             Order #{order.order_number || order.id.slice(0, 8)}
           </h1>
         </div>
@@ -100,8 +100,8 @@ export const OrderDetail = () => {
           onClick={() => { setNewStatus(order.status); setAdminNote(''); setModalOpen(true); }}
           style={{
             padding: '10px 20px',
-            backgroundColor: 'hsl(215, 80%, 20%)',
-            color: '#ffffff',
+            backgroundColor: 'var(--chestnut)',
+            color: 'var(--parchment)',
             borderRadius: '8px',
             border: 'none',
             fontWeight: '700',
@@ -123,14 +123,14 @@ export const OrderDetail = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Ordered Products Table Card */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Package size={20} color="#2563eb" /> Ordered Products ({items.length})
             </h3>
 
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem', textAlign: 'left' }}>
-                <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                <thead style={{ backgroundColor: 'var(--parchment-soft)', borderBottom: '1px solid var(--line)' }}>
                   <tr>
                     <th style={{ padding: '12px 16px' }}>Item</th>
                     <th style={{ padding: '12px 16px' }}>Variant</th>
@@ -144,19 +144,19 @@ export const OrderDetail = () => {
                     const price = parseFloat(item.price_at_purchase || 0);
                     const total = price * item.quantity;
                     return (
-                      <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <tr key={idx} style={{ borderBottom: '1px solid var(--line)' }}>
                         <td style={{ padding: '12px 16px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: '#f1f5f9', overflow: 'hidden', flexShrink: 0 }}>
+                            <div style={{ width: '48px', height: '48px', borderRadius: '8px', backgroundColor: 'var(--parchment-soft)', overflow: 'hidden', flexShrink: 0 }}>
                               {item.primary_image ? (
                                 <img src={item.primary_image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                               ) : (
-                                <Package size={20} color="#94a3b8" />
+                                <Package size={20} color="var(--ink-soft)" />
                               )}
                             </div>
                             <div>
-                              <strong style={{ display: 'block', color: '#0f172a' }}>{item.product_name}</strong>
-                              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>SKU: {item.sku}</span>
+                              <strong style={{ display: 'block', color: 'var(--ink)' }}>{item.product_name}</strong>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>SKU: {item.sku}</span>
                             </div>
                           </div>
                         </td>
@@ -164,9 +164,9 @@ export const OrderDetail = () => {
                           {item.size_label || 'Standard'} | {item.color_name || 'Standard'}
                         </td>
                         <td style={{ padding: '12px 16px', fontWeight: '700' }}>{item.quantity}</td>
-                        <td style={{ padding: '12px 16px' }}>${price.toFixed(2)}</td>
-                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: '700', color: '#0f172a' }}>
-                          ${total.toFixed(2)}
+                        <td style={{ padding: '12px 16px' }}>₹{price.toFixed(2)}</td>
+                        <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: '700', color: 'var(--ink)' }}>
+                          ₹{total.toFixed(2)}
                         </td>
                       </tr>
                     );
@@ -177,15 +177,15 @@ export const OrderDetail = () => {
           </div>
 
           {/* Status Timeline Card */}
-          <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: '1.125rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Clock size={20} color="#d97706" /> Order Status History & Log
             </h3>
 
             {history.length === 0 ? (
-              <p style={{ color: '#64748b', fontSize: '0.875rem' }}>No status history recorded yet.</p>
+              <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem' }}>No status history recorded yet.</p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderLeft: '2px solid #e2e8f0', paddingLeft: '16px', marginLeft: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', borderLeft: '2px solid var(--line)', paddingLeft: '16px', marginLeft: '8px' }}>
                 {history.map((h, idx) => (
                   <div key={idx} style={{ position: 'relative' }}>
                     <div style={{
@@ -195,15 +195,15 @@ export const OrderDetail = () => {
                       width: '12px',
                       height: '12px',
                       borderRadius: '50%',
-                      backgroundColor: idx === history.length - 1 ? '#2563eb' : '#cbd5e1'
+                      backgroundColor: idx === history.length - 1 ? 'var(--brass)' : 'var(--line)'
                     }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                      <strong style={{ fontSize: '0.9375rem', color: '#0f172a' }}>{h.status}</strong>
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                      <strong style={{ fontSize: '0.9375rem', color: 'var(--ink)' }}>{h.status}</strong>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
                         {new Date(h.created_at).toLocaleString()}
                       </span>
                     </div>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.8125rem', color: '#64748b' }}>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.8125rem', color: 'var(--ink-soft)' }}>
                       {h.notes || `Status changed to ${h.status}`} (By: {h.created_by_name || 'Admin'})
                     </p>
                   </div>
@@ -218,72 +218,78 @@ export const OrderDetail = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           
           {/* Customer Info Card */}
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <User size={18} color="#2563eb" /> Customer Profile
             </h4>
             <div style={{ fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <div><strong>Name:</strong> {order.customer_name}</div>
-              <div><strong>Email:</strong> {order.customer_email}</div>
-              <Link to={`/customers/${order.user_id}`} style={{ fontSize: '0.8125rem', color: '#2563eb', fontWeight: '600', marginTop: '4px', textDecoration: 'none' }}>
+              <div><strong style={{ color: 'var(--ink)' }}>Name:</strong> {order.customer_name}</div>
+              <div><strong style={{ color: 'var(--ink)' }}>Email:</strong> {order.customer_email}</div>
+              <Link to={`/customers/${order.user_id}`} style={{ fontSize: '0.8125rem', color: 'var(--brass)', fontWeight: '600', marginTop: '4px', textDecoration: 'none' }}>
                 View Customer History →
               </Link>
             </div>
           </div>
 
           {/* Shipping Address Card */}
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <MapPin size={18} color="#10b981" /> Shipping Address
             </h4>
             {address.full_name ? (
-              <div style={{ fontSize: '0.875rem', color: '#334155', lineHeight: '1.5' }}>
-                <strong>{address.full_name}</strong> ({address.address_type || 'Home'})<br />
+              <div style={{ fontSize: '0.875rem', color: 'var(--ink-soft)', lineHeight: '1.5' }}>
+                <strong style={{ color: 'var(--ink)' }}>{address.full_name}</strong> ({address.address_type || 'Home'})<br />
                 {address.address_line1}<br />
                 {address.address_line2 && <>{address.address_line2}<br /></>}
                 {address.city}, {address.state} - {address.postal_code}<br />
                 {address.country || 'India'}<br />
-                <strong>Phone:</strong> {address.phone_number}
+                <strong style={{ color: 'var(--ink)' }}>Phone:</strong> {address.phone_number}
               </div>
             ) : (
-              <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>No address info attached</span>
+              <span style={{ color: 'var(--ink-soft)', fontSize: '0.875rem' }}>No address info attached</span>
             )}
           </div>
 
           {/* Payment & Price Breakdown Card */}
-          <div style={{ padding: '20px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-            <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: '700', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ padding: '20px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
+            <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: '700', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <CreditCard size={18} color="#f59e0b" /> Payment Summary
             </h4>
             <div style={{ fontSize: '0.875rem', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Payment Method:</span>
-                <strong>{order.payment_method || 'COD'}</strong>
+                <span style={{ color: 'var(--ink-soft)' }}>Payment Method:</span>
+                <strong style={{ color: 'var(--ink)' }}>{order.payment_method || 'COD'}</strong>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Payment Status:</span>
-                <span style={{ fontWeight: '700', color: order.payment_status === 'Paid' ? '#10b981' : '#d97706' }}>
+                <span style={{ color: 'var(--ink-soft)' }}>Payment Status:</span>
+                <span style={{ fontWeight: '700', color: order.payment_status === 'Paid' ? 'var(--bottle)' : 'var(--brass)' }}>
                   {order.payment_status}
                 </span>
               </div>
-              <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '4px 0' }} />
+              <hr style={{ border: 'none', borderTop: '1px solid var(--line)', margin: '4px 0' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Subtotal:</span>
-                <span>${(parseFloat(order.total_price) + parseFloat(order.discount_amount || 0) - parseFloat(order.shipping_amount || 0)).toFixed(2)}</span>
+                <span style={{ color: 'var(--ink-soft)' }}>Subtotal:</span>
+                <span style={{ color: 'var(--ink)' }}>₹{(parseFloat(order.total_price) + parseFloat(order.discount_amount || 0) - parseFloat(order.shipping_amount || 0)).toFixed(2)}</span>
               </div>
               {parseFloat(order.discount_amount) > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#10b981' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--bottle)' }}>
                   <span>Discount:</span>
-                  <span>-${parseFloat(order.discount_amount).toFixed(2)}</span>
+                  <span>-₹{parseFloat(order.discount_amount).toFixed(2)}</span>
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#64748b' }}>Shipping:</span>
-                <span>{parseFloat(order.shipping_amount) > 0 ? `$${parseFloat(order.shipping_amount).toFixed(2)}` : 'FREE'}</span>
+                <span style={{ color: 'var(--ink-soft)' }}>Shipping / Delivery Charge:</span>
+                <span style={{ color: 'var(--ink)' }}>{parseFloat(order.delivery_charge || order.shipping_amount) > 0 ? `₹${parseFloat(order.delivery_charge || order.shipping_amount).toFixed(2)}` : 'FREE'}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.125rem', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>
+              {order.delivery_distance && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem' }}>
+                  <span style={{ color: 'var(--ink-soft)' }}>Delivery Distance:</span>
+                  <span style={{ color: 'var(--ink)' }}>{order.delivery_distance} km</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.125rem', fontWeight: '800', color: 'var(--ink)', marginTop: '4px' }}>
                 <span>Grand Total:</span>
-                <span>${parseFloat(order.total_price).toFixed(2)}</span>
+                <span>₹{parseFloat(order.total_price).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -302,7 +308,7 @@ export const OrderDetail = () => {
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              style={{ padding: '10px 18px', borderRadius: '8px', border: '1px solid #cbd5e1', backgroundColor: '#fff', cursor: 'pointer' }}
+              style={{ padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--line)', backgroundColor: 'var(--card)', cursor: 'pointer', color: 'var(--ink)' }}
             >
               Cancel
             </button>
@@ -310,7 +316,7 @@ export const OrderDetail = () => {
               type="button"
               onClick={handleUpdateStatus}
               disabled={isUpdating}
-              style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', backgroundColor: 'hsl(215, 80%, 20%)', color: '#fff', fontWeight: '700', cursor: 'pointer' }}
+              style={{ padding: '10px 24px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--chestnut)', color: 'var(--parchment)', fontWeight: '700', cursor: 'pointer' }}
             >
               {isUpdating ? 'Saving...' : 'Save Status Update'}
             </button>

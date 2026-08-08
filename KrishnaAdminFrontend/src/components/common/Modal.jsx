@@ -36,9 +36,9 @@ export const Modal = ({ isOpen, onClose, title, children, footer, maxWidth = '56
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--card)',
           borderRadius: '12px',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          boxShadow: 'var(--shadow)',
           width: '100%',
           maxWidth,
           maxHeight: '90vh',
@@ -51,12 +51,12 @@ export const Modal = ({ isOpen, onClose, title, children, footer, maxWidth = '56
         {/* Modal Header */}
         <div style={{
           padding: '20px 24px',
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: '1px solid var(--line)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#0f172a' }}>
+          <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: 'var(--ink)', fontFamily: '"Rozha One", serif' }}>
             {title}
           </h3>
           <button
@@ -64,7 +64,7 @@ export const Modal = ({ isOpen, onClose, title, children, footer, maxWidth = '56
             style={{
               background: 'none',
               border: 'none',
-              color: '#64748b',
+              color: 'var(--ink-soft)',
               cursor: 'pointer',
               padding: '4px',
               borderRadius: '6px',
@@ -85,8 +85,8 @@ export const Modal = ({ isOpen, onClose, title, children, footer, maxWidth = '56
         {footer && (
           <div style={{
             padding: '16px 24px',
-            borderTop: '1px solid #e2e8f0',
-            backgroundColor: '#f8fafc',
+            borderTop: '1px solid var(--line)',
+            backgroundColor: 'var(--parchment-soft)',
             display: 'flex',
             justifyContent: 'flex-end',
             gap: '12px'

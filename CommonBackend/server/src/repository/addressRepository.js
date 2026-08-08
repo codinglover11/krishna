@@ -17,15 +17,16 @@ const addressRepository = {
     const query = `
       INSERT INTO addresses (
         user_id, full_name, address_line1, address_line2, city, state, postal_code,
-        phone_number, alternate_phone, landmark, country, address_type, is_default
+        phone_number, alternate_phone, landmark, country, address_type, is_default, latitude, longitude
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING *
     `;
     const res = await pool.query(query, [
       userId, data.fullName, data.addressLine1, data.addressLine2, data.city, data.state,
       data.postalCode, data.phoneNumber, data.alternatePhone, data.landmark,
-      data.country || 'India', data.addressType || 'Home', data.isDefault || false
+      data.country || 'India', data.addressType || 'Home', data.isDefault || false,
+      data.latitude || null, data.longitude || null
     ]);
     return res.rows[0];
   },
@@ -35,14 +36,15 @@ const addressRepository = {
       UPDATE addresses
       SET full_name = $1, address_line1 = $2, address_line2 = $3, city = $4, state = $5,
           postal_code = $6, phone_number = $7, alternate_phone = $8, landmark = $9,
-          country = $10, address_type = $11, is_default = $12, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $13
+          country = $10, address_type = $11, is_default = $12, latitude = $13, longitude = $14, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $15
       RETURNING *
     `;
     const res = await pool.query(query, [
       data.fullName, data.addressLine1, data.addressLine2, data.city, data.state,
       data.postalCode, data.phoneNumber, data.alternatePhone, data.landmark,
-      data.country || 'India', data.addressType || 'Home', data.isDefault || false, id
+      data.country || 'India', data.addressType || 'Home', data.isDefault || false,
+      data.latitude || null, data.longitude || null, id
     ]);
     return res.rows[0];
   },

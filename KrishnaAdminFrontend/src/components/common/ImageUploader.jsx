@@ -12,7 +12,8 @@ export const ImageUploader = ({
   folder = 'products',
   multiple = false,
   label = 'Upload Image(s)',
-  maxFiles = 8
+  maxFiles = 8,
+  colors = []
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -21,9 +22,9 @@ export const ImageUploader = ({
 
   // Normalize image prop to array format for uniform handling
   const imageList = Array.isArray(images)
-    ? images.map((img) => (typeof img === 'string' ? { url: img, public_id: '', is_primary: false } : img))
+    ? images.map((img) => (typeof img === 'string' ? { url: img, public_id: '', is_primary: false, colorId: null } : { ...img, colorId: img.colorId || null }))
     : images
-    ? [{ url: typeof images === 'string' ? images : images.url, public_id: images.public_id || '', is_primary: true }]
+    ? [{ url: typeof images === 'string' ? images : images.url, public_id: images.public_id || '', is_primary: true, colorId: images.colorId || null }]
     : [];
 
   const validateFile = (file) => {
@@ -135,6 +136,15 @@ export const ImageUploader = ({
     onChange(updated);
   };
 
+  const handleColorChange = (index, colorId) => {
+    if (!multiple) return;
+    const updated = imageList.map((img, idx) => ({
+      ...img,
+      colorId: idx === index ? colorId : img.colorId
+    }));
+    onChange(updated);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
       
@@ -216,14 +226,30 @@ export const ImageUploader = ({
                 borderColor: img.is_primary ? '#2563eb' : '#cbd5e1',
                 overflow: 'hidden',
                 backgroundColor: '#ffffff',
-                height: '110px'
+                height: colors && colors.length > 0 ? '140px' : '110px'
               }}
             >
               <img
                 src={img.url}
                 alt={`Preview ${index}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{ width: '100%', height: colors && colors.length > 0 ? '110px' : '100%', objectFit: 'cover' }}
               />
+
+              {colors && colors.length > 0 && multiple && (
+                <select
+                  value={img.colorId || ''}
+                  onChange={(e) => handleColorChange(index, e.target.value ? parseInt(e.target.value) : null)}
+                  style={{
+                    width: '100%', height: '30px', border: 'none', borderTop: '1px solid #cbd5e1',
+                    fontSize: '11px', outline: 'none', padding: '0 4px', backgroundColor: '#f8fafc'
+                  }}
+                >
+                  <option value="">No Color</option>
+                  {colors.map(c => (
+                    <option key={c.id} value={c.id}>{c.color_name}</option>
+                  ))}
+                </select>
+              )}
 
               {/* Primary Image Badge / Trigger */}
               {multiple && (

@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Heart, User, Search, Menu, X, LogOut } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useAuthAction } from '../../hooks/useAuthAction';
 import { useCartStore } from '../../stores/cartStore';
 import { useWishlistStore } from '../../stores/wishlistStore';
 import { ToastContainer } from '../common/Toast';
+import { toast } from '../../stores/toastStore';
 import { WhatsAppOrderModal } from '../common/WhatsAppOrderModal';
-import logoSvg from '../../assets/react.svg'; // Reuse react.svg for logo or render custom
 
 export const MainLayout = () => {
   const { user, isAuthenticated, logout, checkAuth } = useAuthStore();
   const runWithAuth = useAuthAction();
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const { items: cartItems, fetchCart } = useCartStore();
   const { items: wishlistItems, fetchWishlist } = useWishlistStore();
+
+  const [pulseCart, setPulseCart] = useState(false);
+  const [pulseWish, setPulseWish] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -30,13 +30,22 @@ export const MainLayout = () => {
     }
   }, [isAuthenticated, fetchCart, fetchWishlist]);
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
+  // Trigger pulse animations
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      setPulseCart(true);
+      const t = setTimeout(() => setPulseCart(false), 350);
+      return () => clearTimeout(t);
     }
-  };
+  }, [cartItems]);
+
+  useEffect(() => {
+    if (wishlistItems.length > 0) {
+      setPulseWish(true);
+      const t = setTimeout(() => setPulseWish(false), 350);
+      return () => clearTimeout(t);
+    }
+  }, [wishlistItems]);
 
   const handleCartClick = () => {
     runWithAuth(() => {
@@ -50,269 +59,118 @@ export const MainLayout = () => {
     });
   };
 
-  const handleProfileClick = () => {
-    runWithAuth(() => {
-      navigate('/profile');
-    });
-  };
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-color)' }}>
-      {/* Top Banner Offer */}
-      <div style={{
-        backgroundColor: 'var(--primary-color)',
-        color: 'var(--text-light)',
-        textAlign: 'center',
-        padding: '8px 16px',
-        fontSize: '0.875rem',
-        fontWeight: '500'
-      }}>
-        ✨ Special Festive Sale: Get up to 30% Off on Premium Leather Footwear!
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 
-      {/* Header / Navbar */}
-      <header className="glass-header" style={{
-        borderBottom: '1px solid var(--border-color)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        boxShadow: 'var(--shadow-sm)'
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          padding: '16px 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px'
-        }}>
-          {/* Brand Logo */}
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'var(--primary-color)' }}>
-            <img src={logoSvg} alt="Krishna Footwear Logo" style={{ height: '32px' }} />
-            <span style={{ fontSize: '1.5rem', fontWeight: '700', letterSpacing: '-0.5px' }}>Krishna Footwear</span>
+
+      {/* Header */}
+      <header>
+        <nav className="wrap">
+          <Link to="/" className="brand">
+            <svg viewBox="0 0 100 100" fill="none">
+              <path d="M12 58 Q10 72 26 76 L64 76 Q80 76 84 62 Q87 50 74 40 Q60 29 48 34 Q38 22 22 26 Q10 29 8 42 Q6 50 12 58 Z"
+                stroke="#221B15" strokeWidth="3.4" strokeDasharray="5 4.5" strokeLinecap="round" />
+            </svg>
+            <span className="brand-text">
+              <span className="name">Sawariya Foot Collection</span>
+              <span className="sub">Footwear</span>
+            </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            <NavLink to="/" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}>Home</NavLink>
-            <NavLink to="/products" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}>Browse Shoes</NavLink>
-            <NavLink to="/offers" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}>Offers</NavLink>
-            <NavLink to="/about" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}>About</NavLink>
-            <NavLink to="/contact" className={({ isActive }) => `navbar-link ${isActive ? 'active' : ''}`}>Contact</NavLink>
-          </nav>
+          <div className="nav-links">
+            <NavLink to="/products?category=jutti" className={({ isActive }) => isActive ? 'active' : ''}>Jutti</NavLink>
+            <NavLink to="/products?category=men" className={({ isActive }) => isActive ? 'active' : ''}>Men</NavLink>
+            <NavLink to="/products?category=women" className={({ isActive }) => isActive ? 'active' : ''}>Women</NavLink>
+            <NavLink to="/products?category=kids" className={({ isActive }) => isActive ? 'active' : ''}>Kids</NavLink>
+            <NavLink to="/contact" className={({ isActive }) => isActive ? 'active' : ''}>Contact</NavLink>
+            <a href="#" className="sale" onClick={(e) => { e.preventDefault(); toast.info('Sale offers are locked for now. Work in progress!'); }}>Sale</a>
+          </div>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="desktop-only" style={{
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            maxWidth: '240px',
-            width: '100%'
-          }}>
-            <input
-              type="text"
-              placeholder="Search footwear..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 12px 8px 36px',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid var(--border-color)',
-                outline: 'none',
-                fontFamily: 'var(--font-family)',
-                fontSize: '0.875rem',
-                backgroundColor: 'var(--bg-muted)'
-              }}
-            />
-            <Search size={16} style={{ position: 'absolute', left: '12px', color: 'var(--text-muted)' }} />
-          </form>
-
-          {/* User Icons Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button onClick={handleWishlistClick} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', position: 'relative' }} title="Wishlist">
-              <Heart size={22} />
-              {isAuthenticated && wishlistItems.length > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  backgroundColor: 'var(--secondary-color)',
-                  color: 'white',
-                  fontSize: '0.7rem',
-                  fontWeight: '700',
-                  borderRadius: 'var(--radius-full)',
-                  minWidth: '16px',
-                  height: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '2px'
-                }}>
-                  {wishlistItems.length}
-                </span>
-              )}
+          <div className="nav-actions">
+            <button className="nav-icon-btn" onClick={() => runWithAuth(() => navigate('/profile'))} aria-label="Profile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#221B15" strokeWidth="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <span className="nav-label">{isAuthenticated ? (user?.name ? user.name.split(' ')[0] : 'Profile') : 'Login'}</span>
             </button>
-            <button onClick={handleCartClick} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', position: 'relative' }} title="Shopping Cart">
-              <ShoppingBag size={22} />
-              {isAuthenticated && cartItems.reduce((acc, item) => acc + item.quantity, 0) > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '-4px',
-                  right: '-4px',
-                  backgroundColor: 'var(--secondary-color)',
-                  color: 'white',
-                  fontSize: '0.7rem',
-                  fontWeight: '700',
-                  borderRadius: 'var(--radius-full)',
-                  minWidth: '16px',
-                  height: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '2px'
-                }}>
-                  {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-                </span>
-              )}
+            <button className="nav-icon-btn" onClick={handleWishlistClick} aria-label="Wishlist">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#221B15" strokeWidth="2">
+                <path d="M12 21s-7.5-4.6-10-9C.4 8.4 2 4 6 4c2.2 0 3.7 1.2 6 4 2.3-2.8 3.8-4 6-4 4 0 5.6 4.4 4 8-2.5 4.4-10 9-10 9Z" />
+              </svg>
+              <span className="nav-label">Wishlist</span>
+              <span className={`count-badge ${pulseWish ? 'pulse' : ''}`}>{wishlistItems.length}</span>
             </button>
-            <button onClick={handleProfileClick} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }} title="My Account">
-              <User size={22} />
-            </button>
-            {isAuthenticated && (
-              <button onClick={logout} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }} title="Logout">
-                <LogOut size={22} />
-              </button>
-            )}
-
-            {/* Mobile Menu Icon */}
-            <button
-              className="mobile-only"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', display: 'none' }}
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <button className="nav-icon-btn" onClick={handleCartClick} aria-label="Cart">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#221B15" strokeWidth="2">
+                <path d="M6 8h12l-1 12H7L6 8Z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" />
+              </svg>
+              <span className="nav-label">Cart</span>
+              <span className={`count-badge ${pulseCart ? 'pulse' : ''}`}>{cartCount}</span>
             </button>
           </div>
-        </div>
-
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="mobile-only-drawer" style={{
-            backgroundColor: 'var(--bg-card)',
-            borderTop: '1px solid var(--border-color)',
-            padding: '16px 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px'
-          }}>
-            <NavLink to="/" onClick={() => setMobileMenuOpen(false)} className="navbar-link">Home</NavLink>
-            <NavLink to="/products" onClick={() => setMobileMenuOpen(false)} className="navbar-link">Browse Shoes</NavLink>
-            <NavLink to="/offers" onClick={() => setMobileMenuOpen(false)} className="navbar-link">Offers</NavLink>
-            <NavLink to="/about" onClick={() => setMobileMenuOpen(false)} className="navbar-link">About</NavLink>
-            <NavLink to="/contact" onClick={() => setMobileMenuOpen(false)} className="navbar-link">Contact</NavLink>
-            <form onSubmit={handleSearchSubmit} style={{ position: 'relative', marginTop: '8px' }}>
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px 8px 36px',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--border-color)',
-                  outline: 'none'
-                }}
-              />
-              <Search size={16} style={{ position: 'absolute', left: '12px', top: '10px', color: 'var(--text-muted)' }} />
-            </form>
-          </div>
-        )}
+        </nav>
       </header>
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Outlet />
       </main>
 
       {/* Footer */}
-      <footer style={{
-        backgroundColor: 'var(--primary-color)',
-        color: 'var(--text-light)',
-        borderTop: '4px solid var(--secondary-color)',
-        padding: '48px 24px 24px'
-      }}>
-        <div style={{
-          maxWidth: '1200px',
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '32px',
-          marginBottom: '32px'
-        }}>
+      <footer>
+        <div className="wrap foot-grid">
           <div>
-            <h4 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '16px', color: 'var(--secondary-color)' }}>Krishna Footwear</h4>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem' }}>
-              Crafting premium quality leather boots, formal shoes, and sportswear for retail customers. Built for durability and style.
-            </p>
+            <Link to="/" className="brand" style={{ color: 'inherit' }}>
+              <svg viewBox="0 0 100 100" fill="none" style={{ width: '36px', height: '36px' }}>
+                <path d="M12 58 Q10 72 26 76 L64 76 Q80 76 84 62 Q87 50 74 40 Q60 29 48 34 Q38 22 22 26 Q10 29 8 42 Q6 50 12 58 Z"
+                  stroke="#D8B37A" strokeWidth="3.4" strokeDasharray="5 4.5" strokeLinecap="round" />
+              </svg>
+              <span className="brand-text">
+                <span className="name" style={{ color: '#F3ECDC' }}>Sawariya Foot Collection</span>
+                <span className="sub">Footwear</span>
+              </span>
+            </Link>
+            <p style={{ marginTop: '16px' }}>Mens, ladies & kids footwear — one shop, every occasion.</p>
+            <a href="#" className="whatsapp">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff">
+                <path d="M17 14.2c-.3-.1-1.6-.8-1.9-.9-.2-.1-.4-.1-.6.1-.2.3-.6.9-.8 1-.1.2-.3.2-.6.1-.8-.4-1.6-.9-2.3-1.5-.6-.6-1.1-1.3-1.5-2.1-.1-.2 0-.4.1-.6l.4-.5c.1-.2.2-.3.1-.5-.1-.2-.6-1.5-.9-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.9.9-1.1 2.1-.6 3.4.7 1.9 2.7 4.6 5.5 5.6 1.7.6 2.6.4 3.3-.1.6-.4 1-1.1 1.1-1.8.1-.1.1-.3 0-.4z" />
+              </svg>
+              WhatsApp the shop
+            </a>
           </div>
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px' }}>Shop</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.875rem' }}>
-              <li><Link to="/products" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Men's Collection</Link></li>
-              <li><Link to="/products" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Women's Collection</Link></li>
-              <li><Link to="/products" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Sports Footwear</Link></li>
-              <li><Link to="/offers" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Discount Codes</Link></li>
-            </ul>
+            <h5>Shop</h5>
+            <div className="foot-links">
+              <Link to="/products?category=jutti">Juttis</Link>
+              <Link to="/products?category=men">Men's Footwear</Link>
+              <Link to="/products?category=women">Women's Footwear</Link>
+              <Link to="/products?category=kids">Kids' Footwear</Link>
+            </div>
           </div>
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px' }}>Support & Policies</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.875rem' }}>
-              <li><Link to="/privacy" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Privacy Policy</Link></li>
-              <li><Link to="/terms" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Terms & Conditions</Link></li>
-              <li><Link to="/contact" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>Support Desk</Link></li>
-            </ul>
+            <h5>Shop Hours</h5>
+            <p>Mon - Sat<br />8:30 am - 10:00 pm</p>
+            <p>Sunday<br />8:30 am - 10:00 pm</p>
           </div>
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '16px' }}>Retail Hub</h4>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.875rem', lineHeight: '1.6' }}>
-              <strong>Krishna Footwear</strong><br />
-              Varun Path Mansarowar Near Sharma Sweets,<br />
-              Jaipur Rajasthan, 302020, India<br />
-              <strong style={{ color: 'var(--secondary-color)' }}>Phone:</strong> +91 9079322115<br />
-              <strong style={{ color: 'var(--secondary-color)' }}>Email:</strong> piyushtewani11@gmail.com
-            </p>
+            <h5>Visit the Counter</h5>
+            <p>VQ94+P96, Swarn Path, Sector II, Varun Path,<br />Mansarovar Sector 4, Jaipur, Rajasthan 302020</p>
+            <p>+91 9079322115</p>
+            <p>@sawariyacollection</p>
           </div>
         </div>
-        <div style={{
-          borderTop: '1px solid rgba(255,255,255,0.1)',
-          paddingTop: '24px',
-          textAlign: 'center',
-          fontSize: '0.875rem',
-          color: 'rgba(255,255,255,0.5)'
-        }}>
-          © {new Date().getFullYear()} Krishna Footwear. All Rights Reserved. Built with Premium Quality Standards.
+        <div className="wrap foot-bottom">
+          <span>© {new Date().getFullYear()} Sawariya Foot Collection. All feet welcome.</span>
+          <span>Designed for the shop, not off a shelf.</span>
         </div>
       </footer>
 
-      {/* Global Toast Render */}
+      {/* Global Modals & Toasts */}
       <ToastContainer />
-
-      {/* Global WhatsApp Order Modal */}
       <WhatsAppOrderModal />
-
-      {/* Inline styles for responsive layout controls */}
-      <style>{`
-        @media (min-width: 768px) {
-          .desktop-only { display: flex !important; }
-        }
-        @media (max-width: 767px) {
-          .desktop-only { display: none !important; }
-          .mobile-only { display: block !important; }
-        }
-      `}</style>
     </div>
   );
 };

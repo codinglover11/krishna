@@ -155,6 +155,8 @@ CREATE TABLE addresses (
     country VARCHAR(100) DEFAULT 'India',
     address_type VARCHAR(20) DEFAULT 'Home',
     is_default BOOLEAN DEFAULT FALSE,
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -259,8 +261,10 @@ CREATE TABLE orders (
     tax_amount DECIMAL(10, 2) DEFAULT 0.00 CHECK (tax_amount >= 0),
     shipping_amount DECIMAL(10, 2) DEFAULT 0.00 CHECK (shipping_amount >= 0),
     payment_method VARCHAR(50) DEFAULT 'COD',
-    payment_status VARCHAR(50) NOT NULL DEFAULT 'Pending' CHECK (payment_status IN ('Pending', 'Paid', 'Failed', 'Refunded')),
+    payment_status VARCHAR(50) NOT NULL DEFAULT 'Pending' CHECK (payment_status IN ('Pending', 'Pending_Verification', 'Paid', 'Failed', 'Refunded')),
     payment_reference VARCHAR(150),
+    delivery_distance DECIMAL(10, 2),
+    delivery_charge DECIMAL(10, 2) DEFAULT 0.00 CHECK (delivery_charge >= 0),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

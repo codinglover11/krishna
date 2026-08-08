@@ -118,9 +118,9 @@ export const Coupons = () => {
           <span style={{
             display: 'inline-block',
             padding: '4px 10px',
-            backgroundColor: '#eff6ff',
-            color: '#2563eb',
-            border: '1px border-dashed #93c5fd',
+            backgroundColor: 'var(--parchment-soft)',
+            color: 'var(--brass)',
+            border: '1px border-dashed var(--brass)',
             borderRadius: '6px',
             fontWeight: '800',
             fontSize: '0.875rem',
@@ -128,7 +128,7 @@ export const Coupons = () => {
           }}>
             {row.code}
           </span>
-          {row.description && <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>{row.description}</span>}
+          {row.description && <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--ink-soft)', marginTop: '4px' }}>{row.description}</span>}
         </div>
       )
     },
@@ -136,7 +136,7 @@ export const Coupons = () => {
       header: 'Discount',
       accessor: 'discount_value',
       render: (row) => (
-        <span style={{ fontWeight: '800', color: '#10b981', fontSize: '0.9375rem' }}>
+        <span style={{ fontWeight: '800', color: 'var(--bottle)', fontSize: '0.9375rem' }}>
           {row.discount_type === 'flat' || !row.is_percentage ? `$${parseFloat(row.discount_value).toFixed(2)} FLAT` : `${parseFloat(row.discount_value).toFixed(0)}% OFF`}
         </span>
       )
@@ -150,10 +150,10 @@ export const Coupons = () => {
       header: 'Usage Limits',
       accessor: 'usage_limit',
       render: (row) => (
-        <div style={{ fontSize: '0.75rem', color: '#475569' }}>
-          <div><strong>Redeemed:</strong> {row.total_used_count || 0} times</div>
-          <div><strong>Limit:</strong> {row.usage_limit ? `${row.usage_limit} total` : 'Unlimited'}</div>
-          <div><strong>User Max:</strong> {row.usage_per_user || 1}/user</div>
+        <div style={{ fontSize: '0.75rem', color: 'var(--ink-soft)' }}>
+          <div><strong style={{ color: 'var(--ink)' }}>Redeemed:</strong> {row.total_used_count || 0} times</div>
+          <div><strong style={{ color: 'var(--ink)' }}>Limit:</strong> {row.usage_limit ? `${row.usage_limit} total` : 'Unlimited'}</div>
+          <div><strong style={{ color: 'var(--ink)' }}>User Max:</strong> {row.usage_per_user || 1}/user</div>
         </div>
       )
     },
@@ -164,9 +164,9 @@ export const Coupons = () => {
         const exp = row.expires_at ? new Date(row.expires_at) : null;
         const isExpired = exp && exp < new Date();
         return (
-          <div style={{ fontSize: '0.75rem', color: isExpired ? '#ef4444' : '#64748b' }}>
+          <div style={{ fontSize: '0.75rem', color: isExpired ? 'var(--rose)' : 'var(--ink-soft)' }}>
             {exp ? exp.toLocaleDateString() : 'No Expiry'}
-            {isExpired && <span style={{ display: 'block', fontWeight: '700', color: '#ef4444' }}>(EXPIRED)</span>}
+            {isExpired && <span style={{ display: 'block', fontWeight: '700', color: 'var(--rose)' }}>(EXPIRED)</span>}
           </div>
         );
       }
@@ -180,8 +180,8 @@ export const Coupons = () => {
           borderRadius: '6px',
           fontSize: '0.75rem',
           fontWeight: '700',
-          backgroundColor: row.is_active ? '#ecfdf5' : '#f1f5f9',
-          color: row.is_active ? '#10b981' : '#64748b'
+          backgroundColor: row.is_active ? 'rgba(46, 70, 53, 0.1)' : 'var(--parchment-soft)',
+          color: row.is_active ? 'var(--bottle)' : 'var(--ink-soft)'
         }}>
           {row.is_active ? 'Active' : 'Disabled'}
         </span>
@@ -192,11 +192,11 @@ export const Coupons = () => {
       accessor: 'actions',
       render: (row) => (
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={() => handleOpenModal(row)} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }}>
-            <Edit2 size={16} color="#2563eb" />
+          <button onClick={() => handleOpenModal(row)} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }}>
+            <Edit2 size={16} color="var(--brass)" />
           </button>
-          <button onClick={() => handleDelete(row.id)} style={{ padding: '6px', border: '1px solid #cbd5e1', borderRadius: '6px', background: '#fff', cursor: 'pointer' }}>
-            <Trash2 size={16} color="#ef4444" />
+          <button onClick={() => handleDelete(row.id)} style={{ padding: '6px', border: '1px solid var(--line)', borderRadius: '6px', background: 'var(--card)', cursor: 'pointer' }}>
+            <Trash2 size={16} color="var(--rose)" />
           </button>
         </div>
       )
@@ -208,16 +208,16 @@ export const Coupons = () => {
       
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Coupon Code Management</h1>
-          <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage promotional coupon codes, usage limits, and checkout discount rules</p>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '800', color: 'var(--ink)', margin: 0, fontFamily: '"Rozha One", serif' }}>Coupon Code Management</h1>
+          <p style={{ color: 'var(--ink-soft)', fontSize: '0.875rem', margin: '4px 0 0' }}>Manage promotional coupon codes, usage limits, and checkout discount rules</p>
         </div>
 
         <button
           onClick={() => handleOpenModal()}
           style={{
             padding: '10px 18px',
-            backgroundColor: '#2563eb',
-            color: '#fff',
+            backgroundColor: 'var(--chestnut)',
+            color: 'var(--parchment)',
             border: 'none',
             borderRadius: '8px',
             fontWeight: '700',
@@ -232,7 +232,7 @@ export const Coupons = () => {
         </button>
       </div>
 
-      <div style={{ padding: '24px', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+      <div style={{ padding: '24px', backgroundColor: 'var(--card)', borderRadius: '12px', border: '1px solid var(--line)' }}>
         <DataTable
           columns={columns}
           data={coupons}
@@ -377,8 +377,8 @@ export const Coupons = () => {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
-            <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}>Cancel</button>
-            <button type="submit" style={{ padding: '10px 20px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontWeight: '700', cursor: 'pointer' }}>
+            <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '10px 16px', borderRadius: '6px', border: '1px solid var(--line)', background: 'var(--card)', cursor: 'pointer', color: 'var(--ink)' }}>Cancel</button>
+            <button type="submit" style={{ padding: '10px 20px', borderRadius: '6px', border: 'none', background: 'var(--chestnut)', color: 'var(--parchment)', fontWeight: '700', cursor: 'pointer' }}>
               {editingCoupon ? 'Update Coupon' : 'Create Coupon'}
             </button>
           </div>

@@ -1,354 +1,565 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { MapPin, Plus, CreditCard, ShoppingBag, Check, Ticket, X, ShieldCheck, Truck } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../stores/authStore';
 import { useCartStore } from '../stores/cartStore';
-import { useAddressStore } from '../stores/addressStore';
+import { MapPin, Navigation, IndianRupee, QrCode, CheckCircle, Clock, Search, X, Map, Edit3 } from 'lucide-react';
 import { toast } from '../stores/toastStore';
 import api from '../services/api';
+import { MapLocationPicker } from '../components/common/MapLocationPicker';
 
 export const Checkout = () => {
   const navigate = useNavigate();
-  const { items: cartItems, subtotal, discount: cartDiscount, total: cartTotal, fetchCart } = useCartStore();
-  const { addresses, isLoading: addressLoading, fetchAddresses } = useAddressStore();
+  const { isAuthenticated, user } = useAuthStore();
+  const { items, subtotal, discount, total, fetchCart, clearCart } = useCartStore();
+
+  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Address State
+  const [address, setAddress] = useState({
+    fullName: user?.name || '',
+    phoneNumber: user?.phone || '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    latitude: null,
+    longitude: null
+  });
+
+  // Location Selection State
+  const [locationStatus, setLocationStatus] = useState('detecting'); // detecting, detected, denied, manual, search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasResolvedInitialLocation, setHasResolvedInitialLocation] = useState(false);
+
+  // Delivery State
+  const [deliveryInfo, setDeliveryInfo] = useState({ distanceKm: 0, charge: 0, eligible: true, message: '' });
+
+  // Payment State
+  const [paymentMethod, setPaymentMethod] = useState('COD'); // 'COD' or 'ONLINE'
+  const [timer, setTimer] = useState(120);
+  const timerRef = useRef(null);
   
-  const [selectedAddressId, setSelectedAddressId] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Coupon state
-  const [couponCodeInput, setCouponCodeInput] = useState('');
-  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState(null); // { coupon, discountAmount, finalTotal }
+  const [showMap, setShowMap] = useState(false);
+  const [snapshot, setSnapshot] = useState(null);
+  const [verificationTimer, setVerificationTimer] = useState(0);
 
   useEffect(() => {
-    fetchCart();
-    fetchAddresses();
-  }, []);
-
-  // Auto-select default address
-  useEffect(() => {
-    if (addresses.length > 0) {
-      const def = addresses.find((a) => a.is_default) || addresses[0];
-      setSelectedAddressId(def.id);
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/checkout' } });
+    } else {
+      fetchCart();
     }
-  }, [addresses]);
+  }, [isAuthenticated, fetchCart, navigate]);
 
-  const handleApplyCoupon = async (e) => {
+  useEffect(() => {
+    if (step === 3 && paymentMethod === 'ONLINE') {
+      const storedTime = localStorage.getItem('kf_payment_timer');
+      const storedTimestamp = localStorage.getItem('kf_payment_timestamp');
+      let initialTime = 120;
+      
+      if (storedTime && storedTimestamp) {
+        const elapsed = Math.floor((Date.now() - parseInt(storedTimestamp)) / 1000);
+        const remaining = parseInt(storedTime) - elapsed;
+        initialTime = remaining > 0 ? remaining : 0;
+      }
+      
+      setTimer(initialTime);
+      localStorage.setItem('kf_payment_timestamp', Date.now().toString());
+      localStorage.setItem('kf_payment_timer', initialTime.toString());
+
+      timerRef.current = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current);
+            localStorage.removeItem('kf_payment_timer');
+            localStorage.removeItem('kf_payment_timestamp');
+            return 0;
+          }
+          localStorage.setItem('kf_payment_timer', (prev - 1).toString());
+          localStorage.setItem('kf_payment_timestamp', Date.now().toString());
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timerRef.current);
+    }
+  }, [step, paymentMethod]);
+
+  const calculateDelivery = async (lat, lon, addrText = null) => {
+    setIsLoading(true);
+    try {
+      const res = await api.post('/orders/estimate-delivery', { latitude: lat, longitude: lon });
+      const { distanceKm, charge, eligible, message } = res.data.data;
+      setDeliveryInfo({ distanceKm, charge, eligible, message });
+    } catch (err) {
+      toast.error('Failed to calculate delivery estimate.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (step === 1 && locationStatus === 'detecting' && !hasResolvedInitialLocation) {
+      if (!navigator.geolocation) {
+        setLocationStatus('denied');
+        setHasResolvedInitialLocation(true);
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+            const data = await res.json();
+            const addrString = data.display_name || 'Detected Location';
+            setAddress(prev => ({
+              ...prev,
+              latitude,
+              longitude,
+              addressLine1: addrString
+            }));
+            await calculateDelivery(latitude, longitude, addrString);
+            setLocationStatus('detected');
+            setHasResolvedInitialLocation(true);
+          } catch (err) {
+            setLocationStatus('denied');
+            setHasResolvedInitialLocation(true);
+          }
+        },
+        (err) => {
+          setLocationStatus('denied');
+          setHasResolvedInitialLocation(true);
+        },
+        { timeout: 10000 }
+      );
+    }
+  }, [step, locationStatus, hasResolvedInitialLocation]);
+
+  const handleSearchLocation = async (e) => {
     e.preventDefault();
-    if (!couponCodeInput.trim()) {
-      toast.warning('Please enter a coupon code.');
+    if (!searchQuery.trim()) return;
+    setIsSearching(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
+      const data = await res.json();
+      setSuggestions(data);
+    } catch (err) {
+      toast.error('Search failed. Try again.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSelectSuggestion = async (suggestion) => {
+    const lat = parseFloat(suggestion.lat);
+    const lon = parseFloat(suggestion.lon);
+    const addrString = suggestion.display_name;
+    
+    setAddress(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lon,
+      addressLine1: addrString
+    }));
+    
+    await calculateDelivery(lat, lon, addrString);
+    setLocationStatus('detected');
+    setSearchQuery('');
+    setSuggestions([]);
+  };
+
+  const handleResetLocation = () => {
+    setLocationStatus('denied');
+    setDeliveryInfo({ distanceKm: 0, charge: 0, eligible: true, message: '' });
+  };
+
+  const handleLocationSelect = (loc) => {
+    setAddress(prev => ({
+      ...prev,
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+      addressLine1: loc.addressLine1 || prev.addressLine1,
+      city: loc.city || prev.city,
+      state: loc.state || prev.state,
+      postalCode: loc.postalCode || prev.postalCode
+    }));
+    setShowMap(false);
+    toast.success('Address coordinates pinpointed successfully!');
+  };
+
+  const handleAddressSubmit = async (e) => {
+    e.preventDefault();
+    if (!address.addressLine1 || !address.city || !address.state || !address.postalCode) {
+      toast.warning('Please fill all required address fields.');
       return;
     }
 
-    setIsValidatingCoupon(true);
+    let lat = address.latitude;
+    let lon = address.longitude;
+
+    if (!lat || !lon) {
+      // Fallback Geocoding
+      setIsLoading(true);
+      try {
+        const query = encodeURIComponent(`${address.addressLine1}, ${address.city}, ${address.state}`);
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          lat = parseFloat(data[0].lat);
+          lon = parseFloat(data[0].lon);
+          setAddress(prev => ({ ...prev, latitude: lat, longitude: lon }));
+        } else {
+          throw new Error('Address not found');
+        }
+      } catch (err) {
+        toast.warning('Exact address verification failed, applying standard delivery rate.');
+        // Don't return, let the backend handle the fallback with null coordinates
+      }
+      setIsLoading(false);
+    }
+
+    // Get Delivery Estimate
+    setIsLoading(true);
     try {
-      const response = await api.post('/coupons/validate', {
-        code: couponCodeInput.trim(),
-        subtotal
-      });
-      const data = response.data.data;
-      setAppliedCoupon(data);
-      toast.success(response.data.message || `Coupon "${data.coupon.code}" applied!`);
-    } catch (error) {
-      console.error('Coupon validation failed:', error);
-      const msg = error.response?.data?.message || 'Invalid or expired coupon code.';
-      toast.error(msg);
-      setAppliedCoupon(null);
+      const res = await api.post('/orders/estimate-delivery', { latitude: lat, longitude: lon });
+      const { distanceKm, charge, eligible, message } = res.data.data;
+      setDeliveryInfo({ distanceKm, charge, eligible, message });
+      if (eligible) {
+        toast.success('Delivery available! Proceeding to payment.');
+        setStep(3);
+      } else {
+        toast.error(message || 'Delivery unavailable for this location.');
+      }
+    } catch (err) {
+      toast.error('Failed to calculate delivery estimate.');
     } finally {
-      setIsValidatingCoupon(false);
+      setIsLoading(false);
     }
   };
-
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponCodeInput('');
-    toast.info('Coupon code removed.');
-  };
-
-  const currentCouponDiscount = appliedCoupon ? appliedCoupon.discountAmount : 0;
-  const grandTotal = Math.max(0, cartTotal - currentCouponDiscount);
 
   const handlePlaceOrder = async () => {
-    if (cartItems.length === 0) {
-      toast.error('Your shopping cart is empty.');
-      return;
-    }
-    if (!selectedAddressId) {
-      toast.warning('Please select a shipping address first.');
+    if (step === 3 && paymentMethod === 'ONLINE' && timer === 0) {
+      toast.error('Payment session expired. Please refresh and try again.');
       return;
     }
 
-    setIsSubmitting(true);
+    executeOrderPlacement();
+  };
+
+  const executeOrderPlacement = async () => {
+    setIsLoading(true);
     try {
-      const response = await api.post('/orders', {
-        addressId: selectedAddressId,
-        paymentMethod: 'COD',
-        couponId: appliedCoupon ? appliedCoupon.coupon.id : null,
-        couponCode: appliedCoupon ? appliedCoupon.coupon.code : null,
-        couponDiscount: currentCouponDiscount
+      // Create Address
+      const addressRes = await api.post('/addresses', address);
+      const addressId = addressRes.data.data.id;
+
+      // Create Order
+      const orderRes = await api.post('/orders', {
+        addressId,
+        paymentMethod
       });
+      const orderId = orderRes.data.data.id;
 
-      const order = response.data.data;
-      toast.success('Success! Your order has been placed.');
-      
-      // Reload cart to clear items locally
-      await fetchCart();
-
-      // Redirect to Order Success Page
-      navigate('/order-success', { state: { orderNumber: order.order_number } });
+      if (paymentMethod === 'ONLINE') {
+        setVerificationTimer(120);
+        let currentTimer = 120;
+        
+        const interval = setInterval(async () => {
+          currentTimer -= 1;
+          
+          if (currentTimer <= 0) {
+            clearInterval(interval);
+            setVerificationTimer(0);
+            api.get(`/orders/verify-payment/${orderId}?action=decline`).catch(() => {});
+            toast.error('Payment verification timed out. Order cancelled.');
+            return;
+          }
+          
+          setVerificationTimer(currentTimer);
+          
+          if (currentTimer % 5 === 0) {
+            try {
+              const checkRes = await api.get(`/orders/${orderId}`);
+              const currentStatus = checkRes.data.data.payment_status;
+              
+              if (currentStatus === 'Paid') {
+                clearInterval(interval);
+                setVerificationTimer(0);
+                toast.success('Payment verified and order placed successfully!');
+                setSnapshot({ items, subtotal, total, orderId });
+                clearCart();
+                setStep(4);
+              } else if (currentStatus === 'Payment_Failed' || currentStatus === 'Cancelled') {
+                clearInterval(interval);
+                setVerificationTimer(0);
+                toast.error('Payment was declined by admin.');
+              }
+            } catch (err) {
+              console.error('Polling error', err);
+            }
+          }
+        }, 1000);
+      } else {
+        toast.success('Order placed successfully!');
+        setSnapshot({ items, subtotal, total, orderId });
+        clearCart();
+        setStep(4);
+      }
     } catch (error) {
-      console.error('Order placement failed:', error);
+      console.error(error);
       const msg = error.response?.data?.message || 'Failed to place order.';
       toast.error(msg);
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  if (cartItems.length === 0) {
-    return (
-      <div style={{ maxWidth: '600px', margin: '64px auto', padding: '0 24px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '16px', color: 'var(--primary-color)' }}>Checkout Not Available</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>Your shopping cart is currently empty.</p>
-        <Link to="/products" className="btn btn-primary">Browse Catalogue</Link>
-      </div>
-    );
-  }
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const finalTotal = total + deliveryInfo.charge;
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px', width: '100%', textAlign: 'left' }}>
-      
-      <h1 style={{ fontSize: '2.25rem', fontWeight: '700', color: 'var(--primary-color)', marginBottom: '32px' }}>
-        Secure Checkout
-      </h1>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '32px 24px', minHeight: '70vh' }}>
+      <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: 'var(--primary-color)', marginBottom: '32px' }}>Checkout</h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '40px', alignItems: 'start' }} className="checkout-grid">
-        
-        {/* Left: Address & Payment selection */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          
-          {/* Shipping Address Selection */}
-          <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0, display: 'flex', gap: '8px', alignItems: 'center', color: 'var(--primary-color)' }}>
-                <MapPin size={20} style={{ color: 'var(--secondary-color)' }} /> 1. Shipping Address
-              </h3>
-              <Link to="/addresses" style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--secondary-color)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Plus size={14} /> Manage Addresses
-              </Link>
+      {/* Progress Indicator */}
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '40px' }}>
+        {['Location & Address', 'Payment', 'Done'].map((lbl, idx) => {
+          const actualStep = idx === 0 ? 1 : idx === 1 ? 3 : 4;
+          return (
+            <div key={lbl} style={{ flex: 1, borderBottom: `4px solid ${step >= actualStep ? 'var(--primary-color)' : '#e2e8f0'}`, paddingBottom: '8px', color: step >= actualStep ? 'var(--primary-color)' : 'var(--text-muted)', fontWeight: '600' }}>
+              {idx + 1}. {lbl}
             </div>
-
-            {addressLoading && addresses.length === 0 ? (
-              <div className="skeleton" style={{ height: '120px' }}></div>
-            ) : addresses.length === 0 ? (
-              <div style={{ padding: '20px', border: '1px dashed var(--border-color)', borderRadius: 'var(--radius-md)', textAlign: 'center' }}>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: '0 0 12px' }}>No address found. Please add a shipping address to place orders.</p>
-                <Link to="/addresses" className="btn btn-outline" style={{ padding: '8px 16px', fontSize: '0.875rem' }}>Add Address</Link>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {addresses.map((addr) => (
-                  <div
-                    key={addr.id}
-                    onClick={() => setSelectedAddressId(addr.id)}
-                    style={{
-                      padding: '16px',
-                      borderRadius: 'var(--radius-md)',
-                      border: '2px solid',
-                      borderColor: selectedAddressId === addr.id ? 'var(--primary-color)' : 'var(--border-color)',
-                      backgroundColor: selectedAddressId === addr.id ? 'var(--bg-muted)' : 'transparent',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      gap: '12px',
-                      alignItems: 'flex-start',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name="shippingAddress"
-                      checked={selectedAddressId === addr.id}
-                      onChange={() => setSelectedAddressId(addr.id)}
-                      style={{ marginTop: '4px', accentColor: 'var(--primary-color)' }}
-                    />
-                    <div style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <strong style={{ color: 'var(--text-primary)' }}>{addr.full_name} ({addr.address_type})</strong>
-                      <span>{addr.address_line1}, {addr.address_line2}</span>
-                      <span>{addr.city}, {addr.state} - {addr.postal_code}</span>
-                      <span>Phone: {addr.phone_number}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Payment Method */}
-          <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-lg)', padding: '24px' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '700', margin: '0 0 20px', display: 'flex', gap: '8px', alignItems: 'center', color: 'var(--primary-color)' }}>
-              <CreditCard size={20} style={{ color: 'var(--secondary-color)' }} /> 2. Payment Method
-            </h3>
-            
-            <div style={{
-              padding: '16px',
-              borderRadius: 'var(--radius-md)',
-              border: '2px solid var(--secondary-color)',
-              backgroundColor: 'var(--bg-muted)',
-              display: 'flex',
-              gap: '12px',
-              alignItems: 'center'
-            }}>
-              <Check size={18} style={{ color: 'var(--secondary-color)' }} />
-              <div>
-                <strong style={{ display: 'block', fontSize: '0.9375rem', color: 'var(--text-primary)' }}>Cash On Delivery (COD)</strong>
-                <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Pay with cash upon package delivery to your address.</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Right: Order Summary Breakdown */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          
-          <div style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            position: 'sticky',
-            top: '90px'
-          }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: '700', margin: 0, color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ShoppingBag size={18} /> Order Summary
-            </h3>
-
-            <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: 0 }} />
-
-            {/* Compact Items List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '180px', overflowY: 'auto', paddingRight: '4px' }}>
-              {cartItems.map((item) => (
-                <div key={item.cartItemId} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxWidth: '70%' }}>
-                    <span style={{ fontWeight: '600', color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                      {item.productName}
-                    </span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      Size: {item.size} | Color: {item.color} | Qty: {item.quantity}
-                    </span>
-                  </div>
-                  <span style={{ fontWeight: '700', color: 'var(--primary-color)' }}>
-                    ${item.totalPrice.toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: 0 }} />
-
-            {/* Coupon Promo Input Box */}
-            <div>
-              <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                <Ticket size={14} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Have a Promo Coupon Code?
-              </label>
-
-              {appliedCoupon ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', backgroundColor: 'var(--success-bg)', border: '1px border-dashed var(--success)', borderRadius: 'var(--radius-md)' }}>
-                  <div>
-                    <strong style={{ color: 'var(--success)', fontSize: '0.875rem', display: 'block' }}>{appliedCoupon.coupon.code}</strong>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--success)' }}>Saved ${appliedCoupon.discountAmount.toFixed(2)}</span>
-                  </div>
-                  <button type="button" onClick={handleRemoveCoupon} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--error)' }} title="Remove Coupon">
-                    <X size={16} />
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '8px' }}>
-                  <input
-                    type="text"
-                    value={couponCodeInput}
-                    onChange={(e) => setCouponCodeInput(e.target.value.toUpperCase())}
-                    placeholder="Enter Code (e.g. KRISHNA20)"
-                    style={{ flex: 1, padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', fontSize: '0.875rem', fontWeight: '700' }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={isValidatingCoupon || !couponCodeInput.trim()}
-                    className="btn btn-outline"
-                    style={{ padding: '8px 16px', fontSize: '0.875rem', fontWeight: '700' }}
-                  >
-                    {isValidatingCoupon ? 'Checking...' : 'Apply'}
-                  </button>
-                </form>
-              )}
-            </div>
-
-            <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: 0 }} />
-
-            {/* Price lines */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.9375rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              
-              {currentCouponDiscount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--success)', fontWeight: '700' }}>
-                  <span>Coupon Discount ({appliedCoupon.coupon.code})</span>
-                  <span>-${currentCouponDiscount.toFixed(2)}</span>
-                </div>
-              )}
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Estimated Tax</span>
-                <span>$0.00</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
-                <span>Shipping Charges</span>
-                <span style={{ color: 'var(--success)', fontWeight: '600' }}>FREE</span>
-              </div>
-            </div>
-
-            <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: 0 }} />
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.25rem', fontWeight: '700', color: 'var(--primary-color)' }}>
-              <span>Grand Total</span>
-              <span>${grandTotal.toFixed(2)}</span>
-            </div>
-
-            <button
-              disabled={isSubmitting || !selectedAddressId}
-              onClick={handlePlaceOrder}
-              className="btn btn-secondary"
-              style={{
-                width: '100%',
-                padding: '16px',
-                fontSize: '1rem',
-                cursor: (isSubmitting || !selectedAddressId) ? 'not-allowed' : 'pointer',
-                opacity: (isSubmitting || !selectedAddressId) ? 0.7 : 1
-              }}
-            >
-              {isSubmitting ? 'Placing Order...' : 'Place COD Order'}
-            </button>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8125rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-              <ShieldCheck size={16} /> Guaranteed 256-Bit SSL Encryption
-            </div>
-          </div>
-
-        </div>
-
+          );
+        })}
       </div>
 
-      <style>{`
-        @media (max-width: 768px) {
-          .checkout-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '40px' }}>
+        
+        {/* Left Column - Forms */}
+        <div>
+          {/* Step 1: Location & Address */}
+          {step === 1 && (
+            <div style={{ backgroundColor: '#fff', border: '1px solid var(--line)', borderRadius: '12px', padding: '32px' }}>
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '24px' }}>Delivery Location</h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+                <div style={{ padding: '24px', border: '1px solid var(--line)', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
+                  <h3 style={{ margin: '0 0 16px 0', fontSize: '1.125rem', color: 'var(--primary-color)' }}>1. Pinpoint Location on Map</h3>
+                  {address.latitude && address.longitude ? (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <p style={{ margin: '0 0 4px 0', fontWeight: '600', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <CheckCircle size={18} /> Location Confirmed
+                        </p>
+                        <p style={{ margin: 0, fontSize: '0.9375rem', color: 'var(--text-secondary)' }}>{address.addressLine1}</p>
+                      </div>
+                      <button onClick={() => setShowMap(true)} style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid var(--line)', backgroundColor: '#fff', cursor: 'pointer', fontWeight: '500' }}>
+                        Change
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p style={{ margin: '0 0 16px 0', color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
+                        Please select your exact delivery location on the map to help us deliver accurately and check delivery eligibility.
+                      </p>
+                      <button onClick={() => setShowMap(true)} className="btn-block" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <Map size={20} /> Select Location on Map
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ padding: '24px', border: '1px solid var(--line)', borderRadius: '8px', opacity: address.latitude ? 1 : 0.6, pointerEvents: address.latitude ? 'auto' : 'none' }}>
+                  <h3 style={{ margin: '0 0 16px 0', fontSize: '1.125rem', color: 'var(--primary-color)' }}>2. Address Details</h3>
+                  <form onSubmit={handleAddressSubmit} style={{ display: 'grid', gap: '16px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <input required placeholder="Full Name" value={address.fullName} onChange={e => setAddress({...address, fullName: e.target.value})} style={{ padding: '12px', border: '1px solid var(--line)', borderRadius: '6px' }} />
+                      <input required placeholder="Mobile Number" value={address.phoneNumber} onChange={e => setAddress({...address, phoneNumber: e.target.value})} style={{ padding: '12px', border: '1px solid var(--line)', borderRadius: '6px' }} />
+                    </div>
+                    <input required placeholder="House / Flat No." value={address.addressLine2} onChange={e => setAddress({...address, addressLine2: e.target.value})} style={{ padding: '12px', border: '1px solid var(--line)', borderRadius: '6px' }} />
+                    <input required placeholder="Area / Locality / Street" value={address.addressLine1} onChange={e => setAddress({...address, addressLine1: e.target.value})} style={{ padding: '12px', border: '1px solid var(--line)', borderRadius: '6px' }} />
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <input required placeholder="City" value={address.city} onChange={e => setAddress({...address, city: e.target.value})} style={{ padding: '12px', border: '1px solid var(--line)', borderRadius: '6px' }} />
+                      <input required placeholder="State" value={address.state} onChange={e => setAddress({...address, state: e.target.value})} style={{ padding: '12px', border: '1px solid var(--line)', borderRadius: '6px' }} />
+                    </div>
+                    <input required placeholder="Pincode" value={address.postalCode} onChange={e => setAddress({...address, postalCode: e.target.value})} style={{ padding: '12px', border: '1px solid var(--line)', borderRadius: '6px' }} />
+                    
+                    {deliveryInfo.message && (
+                      <div style={{ padding: '12px', borderRadius: '6px', backgroundColor: deliveryInfo.eligible ? '#f0fdf4' : '#fef2f2', color: deliveryInfo.eligible ? '#16a34a' : '#dc2626', fontSize: '0.9375rem', fontWeight: '500' }}>
+                        {deliveryInfo.eligible ? <CheckCircle size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} /> : <X size={16} style={{ verticalAlign: 'middle', marginRight: '6px' }} />}
+                        {deliveryInfo.message} {deliveryInfo.distanceKm > 0 && `(Distance: ${deliveryInfo.distanceKm} km)`}
+                      </div>
+                    )}
+
+                    <button type="submit" disabled={isLoading} className="btn-block" style={{ marginTop: '16px' }}>
+                      {isLoading ? 'Checking...' : 'Check Delivery & Continue'}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Payment */}
+          {step === 3 && (
+            <div style={{ backgroundColor: '#fff', border: '1px solid var(--line)', borderRadius: '12px', padding: '32px' }}>
+              <h2 style={{ fontSize: '1.5rem', marginBottom: '24px' }}>Select Payment Method</h2>
+              
+              <div style={{ display: 'grid', gap: '16px', marginBottom: '32px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '24px', border: `2px solid ${paymentMethod === 'COD' ? 'var(--primary-color)' : 'var(--line)'}`, borderRadius: '8px', cursor: 'pointer' }}>
+                  <input type="radio" name="payment" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} style={{ width: '20px', height: '20px' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <IndianRupee size={24} color={paymentMethod === 'COD' ? 'var(--primary-color)' : 'var(--text-muted)'} />
+                    <span style={{ fontSize: '1.125rem', fontWeight: '600' }}>Cash on Delivery</span>
+                  </div>
+                </label>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '24px', border: `2px solid ${paymentMethod === 'ONLINE' ? 'var(--primary-color)' : 'var(--line)'}`, borderRadius: '8px', cursor: 'pointer' }}>
+                  <input type="radio" name="payment" value="ONLINE" checked={paymentMethod === 'ONLINE'} onChange={() => setPaymentMethod('ONLINE')} style={{ width: '20px', height: '20px' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <QrCode size={24} color={paymentMethod === 'ONLINE' ? 'var(--primary-color)' : 'var(--text-muted)'} />
+                    <span style={{ fontSize: '1.125rem', fontWeight: '600' }}>Online Payment (UPI / QR)</span>
+                  </div>
+                </label>
+              </div>
+
+              {paymentMethod === 'ONLINE' && verificationTimer === 0 && (
+                <div style={{ padding: '32px', backgroundColor: '#f8fafc', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--line)', marginBottom: '32px' }}>
+                  <h3 style={{ margin: '0 0 16px 0', fontSize: '1.25rem' }}>Scan QR to Pay</h3>
+                  <div style={{ width: '200px', height: '200px', backgroundColor: '#e2e8f0', margin: '0 auto 24px auto', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', overflow: 'hidden' }}>
+                    <img src="/payment/paytm_qr.png" alt="Paytm QR" onError={(e) => { e.target.style.display = 'none'; }} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    {!document.querySelector('img[src="/payment/paytm_qr.png"]')?.complete && (
+                       <div style={{ color: 'var(--text-muted)' }}>[ DUMMY QR IMAGE ]</div>
+                    )}
+                  </div>
+                  <p style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-primary)', margin: '0 0 16px 0' }}>₹{finalTotal.toLocaleString()}</p>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: timer > 0 ? '#b45309' : '#dc2626', fontWeight: '600', backgroundColor: timer > 0 ? '#fef3c7' : '#fee2e2', padding: '12px', borderRadius: '8px', display: 'inline-flex' }}>
+                    <Clock size={20} />
+                    {timer > 0 ? `Payment Window: ${formatTime(timer)}` : 'Payment session expired!'}
+                  </div>
+                </div>
+              )}
+
+              <button 
+                onClick={handlePlaceOrder} 
+                disabled={isLoading || (paymentMethod === 'ONLINE' && timer === 0) || verificationTimer > 0}
+                className="btn-block"
+              >
+                {isLoading ? 'Processing...' : paymentMethod === 'ONLINE' ? (verificationTimer > 0 ? `Waiting for Admin to Verify... ${verificationTimer}s` : "I've Completed Payment") : 'Confirm Order'}
+              </button>
+            </div>
+          )}
+
+          {/* Step 4: Done */}
+          {step === 4 && (
+            <div style={{ backgroundColor: '#fff', border: '1px solid var(--line)', borderRadius: '12px', padding: '48px 32px', textAlign: 'center' }}>
+              <CheckCircle size={64} color="#16a34a" style={{ margin: '0 auto 24px auto' }} />
+              <h2 style={{ fontSize: '2rem', fontWeight: '700', color: '#16a34a', marginBottom: '16px' }}>Order Placed Successfully!</h2>
+              <p style={{ fontSize: '1.125rem', color: 'var(--text-muted)', marginBottom: '32px' }}>
+                Thank you for your purchase. You will receive an order confirmation email shortly.
+              </p>
+              <div style={{ backgroundColor: '#f8fafc', padding: '24px', borderRadius: '8px', textAlign: 'left', marginBottom: '40px', display: 'grid', gap: '16px' }}>
+                <div>
+                   <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Expected Delivery</p>
+                   <p style={{ margin: '0', fontSize: '1.125rem', fontWeight: '600' }}>Within 7 days</p>
+                </div>
+                <div>
+                   <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Delivery Address</p>
+                   <p style={{ margin: '0', fontSize: '1rem', fontWeight: '500' }}>
+                     {address.fullName}<br/>
+                     {address.addressLine2}, {address.addressLine1}<br/>
+                     {address.city}, {address.state} - {address.postalCode}
+                   </p>
+                </div>
+              </div>
+              <br />
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
+                <button onClick={() => navigate('/products')} style={{ padding: '12px 32px', backgroundColor: 'transparent', color: 'var(--primary-color)', borderRadius: '8px', fontWeight: '600', border: '1px solid var(--primary-color)', cursor: 'pointer' }}>
+                  Continue Shopping
+                </button>
+                {snapshot?.orderId && (
+                  <button onClick={() => navigate(`/orders/${snapshot.orderId}`)} style={{ padding: '12px 32px', backgroundColor: 'var(--primary-color)', color: '#fff', borderRadius: '8px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
+                    Track Order Status
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column - Order Summary */}
+        <div style={{ position: 'sticky', top: '24px', backgroundColor: '#f8fafc', borderRadius: '16px', padding: '32px', border: '1px solid var(--line)' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-primary)', margin: '0 0 24px 0', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
+            Order Summary
+          </h2>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+            {(step === 4 && snapshot ? snapshot.items : items).map((item) => (
+              <div key={`summary-${item.cartItemId}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+                <div style={{ flex: 1, paddingRight: '16px' }}>
+                  <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>
+                    {item.productName}
+                  </div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '2px' }}>
+                    Qty: {item.quantity} × ₹{(parseFloat(item.discountPrice || item.unitPrice)).toLocaleString()}
+                  </div>
+                </div>
+                <div style={{ fontWeight: '500', color: 'var(--text-primary)' }}>
+                  ₹{((parseFloat(item.discountPrice || item.unitPrice)) * item.quantity).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderTop: '1px dashed #cbd5e1', margin: '24px 0' }}></div>
+          {address.fullName && (
+            <div style={{ marginBottom: '24px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+              <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px' }}>Delivering to:</div>
+              <div>{address.fullName} - {address.phoneNumber}</div>
+              <div>{address.addressLine2}, {address.addressLine1}</div>
+              <div>{address.city}, {address.state} - {address.postalCode}</div>
+            </div>
+          )}
+          <div style={{ borderTop: '1px dashed #cbd5e1', margin: '24px 0' }}></div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Subtotal</span>
+              <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>₹{(step === 4 && snapshot ? snapshot.subtotal : subtotal).toLocaleString()}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Delivery Charge</span>
+              <span style={{ color: 'var(--text-muted)' }}>
+                {step > 1 ? `₹${deliveryInfo.charge}` : 'Calculated next step'}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--text-primary)' }}>Total</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary-color)' }}>
+              ₹{step > 1 ? ((step === 4 && snapshot ? snapshot.total : total) + deliveryInfo.charge).toLocaleString() : (step === 4 && snapshot ? snapshot.total : total).toLocaleString()}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      {showMap && (
+        <MapLocationPicker 
+          onLocationSelect={handleLocationSelect} 
+          onCancel={() => setShowMap(false)} 
+        />
+      )}
     </div>
   );
 };

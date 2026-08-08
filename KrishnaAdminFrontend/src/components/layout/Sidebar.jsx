@@ -49,8 +49,8 @@ export const Sidebar = ({ isOpen, isMobile, onClose }) => {
   return (
     <aside style={{
       width: '260px',
-      backgroundColor: 'hsl(215, 80%, 15%)',
-      color: '#ffffff',
+      backgroundColor: 'var(--ink)',
+      color: 'var(--parchment)',
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
@@ -59,7 +59,7 @@ export const Sidebar = ({ isOpen, isMobile, onClose }) => {
       transition: 'left 0.3s ease',
       top: 0,
       zIndex: 100,
-      boxShadow: '4px 0 10px rgba(0,0,0,0.1)'
+      boxShadow: '4px 0 10px rgba(0,0,0,0.2)'
     }}>
       {/* Brand Header */}
       <div style={{
@@ -74,21 +74,22 @@ export const Sidebar = ({ isOpen, isMobile, onClose }) => {
             width: '36px',
             height: '36px',
             borderRadius: '8px',
-            backgroundColor: 'hsl(30, 90%, 55%)',
+            backgroundColor: 'var(--brass)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#ffffff',
+            color: 'var(--card)',
             fontWeight: '700',
-            fontSize: '1.125rem'
+            fontSize: '1.125rem',
+            fontFamily: '"Rozha One", serif'
           }}>
             KF
           </div>
           <div>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: '700', margin: 0, color: '#ffffff' }}>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: '400', margin: 0, color: 'var(--parchment)', fontFamily: '"Rozha One", serif', letterSpacing: '0.02em' }}>
               Krishna Admin
             </h2>
-            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Footwear Management</span>
+            <span style={{ fontSize: '0.75rem', color: 'rgba(243,236,220,0.6)' }}>Footwear Management</span>
           </div>
         </div>
         {isMobile && (
@@ -110,9 +111,9 @@ export const Sidebar = ({ isOpen, isMobile, onClose }) => {
               gap: '12px',
               padding: '12px 16px',
               borderRadius: '8px',
-              color: isActive ? 'hsl(30, 90%, 55%)' : 'rgba(255, 255, 255, 0.75)',
-              backgroundColor: isActive ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              fontWeight: isActive ? '700' : '500',
+              color: isActive ? 'var(--card)' : 'rgba(243, 236, 220, 0.75)',
+              backgroundColor: isActive ? 'var(--chestnut)' : 'transparent',
+              fontWeight: isActive ? '600' : '500',
               fontSize: '0.9375rem',
               textDecoration: 'none',
               transition: 'all 0.15s ease'
@@ -135,8 +136,8 @@ export const Sidebar = ({ isOpen, isMobile, onClose }) => {
             gap: '12px',
             padding: '12px 16px',
             borderRadius: '8px',
-            color: '#ef4444',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            color: 'var(--rose)',
+            backgroundColor: 'rgba(185, 122, 102, 0.1)',
             border: 'none',
             fontSize: '0.9375rem',
             fontWeight: '600',

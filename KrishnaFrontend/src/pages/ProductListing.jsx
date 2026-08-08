@@ -9,7 +9,7 @@ import { EmptyState } from '../components/common/EmptyState';
 
 export const ProductListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const selectedCategory = searchParams.get('category') || '';
+  const selectedCategoryParam = searchParams.get('category') || '';
   const selectedGender = searchParams.get('gender') || '';
   const selectedAgeGroup = searchParams.get('ageGroup') || '';
   
@@ -19,11 +19,29 @@ export const ProductListing = () => {
   const [page, setPage] = useState(1);
   const limit = 9;
 
+  // Fetch categories list first
+  const { data: categories, isLoading: isCategoriesLoading } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => productService.getCategories(),
+    retry: false
+  });
+
+  // Resolve category ID from slug or ID
+  const matchedCategory = categories?.find(
+    c => c.id.toString() === selectedCategoryParam || 
+         c.slug?.toLowerCase() === selectedCategoryParam.toLowerCase() || 
+         c.name?.toLowerCase() === selectedCategoryParam.toLowerCase()
+  );
+  const resolvedCategoryId = matchedCategory ? matchedCategory.id.toString() : '';
+
+  // Only fetch products once categories are loaded (if a category filter is present)
+  const shouldFetchProducts = !selectedCategoryParam || (selectedCategoryParam && categories);
+
   // Fetch product list using react-query
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['products', selectedCategory, selectedGender, selectedAgeGroup, sortOrder, minPrice, maxPrice, page],
+  const { data, isLoading: isProductsLoading, error } = useQuery({
+    queryKey: ['products', resolvedCategoryId, selectedGender, selectedAgeGroup, sortOrder, minPrice, maxPrice, page],
     queryFn: () => productService.getProducts({
-      category: selectedCategory,
+      category: resolvedCategoryId,
       gender: selectedGender,
       ageGroup: selectedAgeGroup,
       sort: sortOrder,
@@ -32,16 +50,11 @@ export const ProductListing = () => {
       page,
       limit
     }),
+    enabled: !!shouldFetchProducts,
     retry: false
   });
 
-  // Fetch categories list
-  const { data: categories } = useQuery({
-    queryKey: ['categories'],
-    queryFn: () => productService.getCategories(),
-    retry: false
-  });
-
+  const isLoading = isCategoriesLoading || (isProductsLoading && shouldFetchProducts);
   const products = data?.products || [];
   const pagination = data?.pagination || { total: 0, totalPages: 1 };
 
@@ -113,7 +126,7 @@ export const ProductListing = () => {
                 <input
                   type="radio"
                   name="category"
-                  checked={selectedCategory === ''}
+                  checked={!resolvedCategoryId && selectedCategoryParam === ''}
                   onChange={() => {
                     const newParams = new URLSearchParams(searchParams);
                     newParams.delete('category');
@@ -128,10 +141,10 @@ export const ProductListing = () => {
                   <input
                     type="radio"
                     name="category"
-                    checked={parseInt(selectedCategory, 10) === cat.id}
+                    checked={resolvedCategoryId === cat.id.toString()}
                     onChange={() => {
                       const newParams = new URLSearchParams(searchParams);
-                      newParams.set('category', cat.id.toString());
+                      newParams.set('category', cat.slug || cat.id.toString());
                       setSearchParams(newParams);
                       setPage(1);
                     }}
@@ -142,53 +155,7 @@ export const ProductListing = () => {
             </div>
           </div>
 
-          {/* Gender Filter */}
-          <div>
-            <h4 style={{ fontWeight: '600', marginBottom: '12px', fontSize: '0.9375rem', textAlign: 'left' }}>Gender</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-              {['All', 'Men', 'Women', 'None', 'Boys', 'Girls'].map((g) => (
-                <label key={g} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    name="gender"
-                    checked={(g === 'All' && selectedGender === '') || selectedGender === g}
-                    onChange={() => {
-                      const newParams = new URLSearchParams(searchParams);
-                      if (g === 'All') newParams.delete('gender');
-                      else newParams.set('gender', g);
-                      setSearchParams(newParams);
-                      setPage(1);
-                    }}
-                  />
-                  {g === 'All' ? 'All Genders' : g}
-                </label>
-              ))}
-            </div>
-          </div>
 
-          {/* Age Group Filter */}
-          <div>
-            <h4 style={{ fontWeight: '600', marginBottom: '12px', fontSize: '0.9375rem', textAlign: 'left' }}>Age Group</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-              {['All', 'Adults', 'Kids', 'Infants', 'All Ages'].map((a) => (
-                <label key={a} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', cursor: 'pointer' }}>
-                  <input
-                    type="radio"
-                    name="ageGroup"
-                    checked={(a === 'All' && selectedAgeGroup === '') || selectedAgeGroup === a}
-                    onChange={() => {
-                      const newParams = new URLSearchParams(searchParams);
-                      if (a === 'All') newParams.delete('ageGroup');
-                      else newParams.set('ageGroup', a);
-                      setSearchParams(newParams);
-                      setPage(1);
-                    }}
-                  />
-                  {a === 'All' ? 'All Ages' : a}
-                </label>
-              ))}
-            </div>
-          </div>
 
           {/* Price Range Filter */}
           <div>

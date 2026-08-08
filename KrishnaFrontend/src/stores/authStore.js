@@ -4,8 +4,18 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 // Initial state from localStorage
-const storedToken = localStorage.getItem('krishna_token') || null;
-const storedUser = localStorage.getItem('krishna_user') ? JSON.parse(localStorage.getItem('krishna_user')) : null;
+// Utility to parse JWT safely
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
+
+const storedToken = localStorage.getItem('krishna_token') || localStorage.getItem('authToken') || null;
+const decodedUser = storedToken ? parseJwt(storedToken) : null;
+const storedUser = decodedUser || (localStorage.getItem('krishna_user') ? JSON.parse(localStorage.getItem('krishna_user')) : null);
 
 export const useAuthStore = create((set, get) => ({
   user: storedUser,
@@ -15,17 +25,22 @@ export const useAuthStore = create((set, get) => ({
   actionQueue: [], // Queue for guest actions to run after login
 
   setAuth: (user, accessToken) => {
-    if (user && accessToken) {
+    if (accessToken) {
       localStorage.setItem('krishna_token', accessToken);
-      localStorage.setItem('krishna_user', JSON.stringify(user));
+      localStorage.setItem('authToken', accessToken);
+      const decodedUser = parseJwt(accessToken) || user;
+      if (decodedUser) {
+        localStorage.setItem('krishna_user', JSON.stringify(decodedUser));
+      }
       set({
-        user,
+        user: decodedUser,
         accessToken,
         isAuthenticated: true,
         isLoading: false,
       });
     } else {
       localStorage.removeItem('krishna_token');
+      localStorage.removeItem('authToken');
       localStorage.removeItem('krishna_user');
       set({
         user: null,

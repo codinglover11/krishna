@@ -104,9 +104,34 @@ const inventoryController = {
 
   getLookupMetadata: async (req, res, next) => {
     try {
+      // Auto-migrate color_id
+      await pool.query('ALTER TABLE product_images ADD COLUMN IF NOT EXISTS color_id INTEGER REFERENCES colors(id) ON DELETE SET NULL;');
+      
       const sizesRes = await pool.query(`SELECT * FROM sizes ORDER BY id ASC`);
       const colorsRes = await pool.query(`SELECT * FROM colors ORDER BY id ASC`);
       return sendSuccess(res, 200, { sizes: sizesRes.rows, colors: colorsRes.rows }, 'Sizes and colors fetched.');
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  createSize: async (req, res, next) => {
+    try {
+      const { size_label } = req.body;
+      if (!size_label) return sendError(res, 400, 'Size label is required');
+      const result = await pool.query('INSERT INTO sizes (size_label) VALUES ($1) RETURNING *', [size_label]);
+      return sendSuccess(res, 201, result.rows[0], 'Size created');
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  createColor: async (req, res, next) => {
+    try {
+      const { color_name, color_code } = req.body;
+      if (!color_name || !color_code) return sendError(res, 400, 'Color name and code are required');
+      const result = await pool.query('INSERT INTO colors (color_name, color_code) VALUES ($1, $2) RETURNING *', [color_name, color_code]);
+      return sendSuccess(res, 201, result.rows[0], 'Color created');
     } catch (error) {
       next(error);
     }

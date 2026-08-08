@@ -149,7 +149,7 @@ const productRepository = {
       if (!product) return null;
 
       const imagesResult = await pool.query(
-        `SELECT id, image_url, is_primary FROM product_images WHERE product_id = $1 ORDER BY is_primary DESC, created_at ASC`,
+        `SELECT id, image_url, is_primary, color_id FROM product_images WHERE product_id = $1 ORDER BY is_primary DESC, created_at ASC`,
         [id]
       );
       product.images = imagesResult.rows;
@@ -191,7 +191,7 @@ const productRepository = {
       if (!product) return null;
 
       const imagesResult = await pool.query(
-        `SELECT id, image_url, is_primary FROM product_images WHERE product_id = $1 ORDER BY is_primary DESC, created_at ASC`,
+        `SELECT id, image_url, is_primary, color_id FROM product_images WHERE product_id = $1 ORDER BY is_primary DESC, created_at ASC`,
         [slug]
       );
       product.images = imagesResult.rows;
@@ -225,9 +225,12 @@ const productRepository = {
 
       if (data.images && Array.isArray(data.images)) {
         for (let i = 0; i < data.images.length; i++) {
+          const img = data.images[i];
+          const url = typeof img === 'object' ? img.url : img;
+          const colorId = typeof img === 'object' ? (img.colorId || null) : null;
           await pool.query(
-            'INSERT INTO product_images (product_id, image_url, is_primary) VALUES ($1, $2, $3)',
-            [product.id, data.images[i], i === 0]
+            'INSERT INTO product_images (product_id, image_url, is_primary, color_id) VALUES ($1, $2, $3, $4)',
+            [product.id, url, i === 0, colorId]
           );
         }
       }
@@ -241,6 +244,7 @@ const productRepository = {
         }
       }
 
+      await cacheService.flushPattern('products:*');
       return product;
     } catch (err) {
       console.warn('[ProductRepository] Falling back to basic product creation query:', err.message);
@@ -254,9 +258,12 @@ const productRepository = {
 
       if (data.images && Array.isArray(data.images)) {
         for (let i = 0; i < data.images.length; i++) {
+          const img = data.images[i];
+          const url = typeof img === 'object' ? img.url : img;
+          const colorId = typeof img === 'object' ? (img.colorId || null) : null;
           await pool.query(
-            'INSERT INTO product_images (product_id, image_url, is_primary) VALUES ($1, $2, $3)',
-            [product.id, data.images[i], i === 0]
+            'INSERT INTO product_images (product_id, image_url, is_primary, color_id) VALUES ($1, $2, $3, $4)',
+            [product.id, url, i === 0, colorId]
           );
         }
       }
@@ -270,6 +277,7 @@ const productRepository = {
         }
       }
 
+      await cacheService.flushPattern('products:*');
       return product;
     }
   },
@@ -295,9 +303,12 @@ const productRepository = {
       if (data.images && Array.isArray(data.images)) {
         await pool.query('DELETE FROM product_images WHERE product_id = $1', [id]);
         for (let i = 0; i < data.images.length; i++) {
+          const img = data.images[i];
+          const url = typeof img === 'object' ? img.url : img;
+          const colorId = typeof img === 'object' ? (img.colorId || null) : null;
           await pool.query(
-            'INSERT INTO product_images (product_id, image_url, is_primary) VALUES ($1, $2, $3)',
-            [id, data.images[i], i === 0]
+            'INSERT INTO product_images (product_id, image_url, is_primary, color_id) VALUES ($1, $2, $3, $4)',
+            [id, url, i === 0, colorId]
           );
         }
       }
@@ -312,6 +323,7 @@ const productRepository = {
         }
       }
 
+      await cacheService.flushPattern('products:*');
       return res.rows[0];
     } catch (err) {
       console.warn('[ProductRepository] Falling back to basic product update query:', err.message);
@@ -329,9 +341,12 @@ const productRepository = {
           await pool.query('DELETE FROM product_images WHERE product_id = $1', [id]);
           console.log(`[DEBUG] Deleted old images for ${id}`);
           for (let i = 0; i < data.images.length; i++) {
+            const img = data.images[i];
+            const url = typeof img === 'object' ? img.url : img;
+            const colorId = typeof img === 'object' ? (img.colorId || null) : null;
             await pool.query(
-              'INSERT INTO product_images (product_id, image_url, is_primary) VALUES ($1, $2, $3)',
-              [id, data.images[i], i === 0]
+              'INSERT INTO product_images (product_id, image_url, is_primary, color_id) VALUES ($1, $2, $3, $4)',
+              [id, url, i === 0, colorId]
             );
             console.log(`[DEBUG] Inserted image ${i} for ${id}:`, data.images[i]);
           }
@@ -362,12 +377,14 @@ const productRepository = {
   softDeleteProduct: async (id) => {
     const query = `UPDATE products SET is_deleted = TRUE, is_active = FALSE, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`;
     const res = await pool.query(query, [id]);
+    await cacheService.flushPattern('products:*');
     return res.rows[0];
   },
 
   restoreProduct: async (id) => {
     const query = `UPDATE products SET is_deleted = FALSE, is_active = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING *`;
     const res = await pool.query(query, [id]);
+    await cacheService.flushPattern('products:*');
     return res.rows[0];
   },
 

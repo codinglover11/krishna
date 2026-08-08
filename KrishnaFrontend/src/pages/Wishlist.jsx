@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Heart, Trash2, ShoppingCart, Eye } from 'lucide-react';
 import { useWishlistStore } from '../stores/wishlistStore';
-import { useOrderModalStore } from '../stores/orderModalStore';
 import productService from '../services/productService';
 import { toast } from '../stores/toastStore';
 import { EmptyState } from '../components/common/EmptyState';
@@ -17,8 +16,7 @@ export const Wishlist = () => {
   }, []);
 
   const handleMoveToCart = (item) => {
-    const { openModal } = useOrderModalStore.getState();
-    openModal(item);
+    navigate(item.slug ? `/products/${item.slug}` : `/products/${item.product_id}`);
   };
 
   if (isLoading && items.length === 0) {

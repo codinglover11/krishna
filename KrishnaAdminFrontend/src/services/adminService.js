@@ -125,6 +125,16 @@ export const adminService = {
     return res.data.data;
   },
 
+  createSize: async (data) => {
+    const res = await api.post('/inventory/metadata/sizes', data);
+    return res.data.data;
+  },
+
+  createColor: async (data) => {
+    const res = await api.post('/inventory/metadata/colors', data);
+    return res.data.data;
+  },
+
   updateVariantStock: async (variantId, stockQuantity) => {
     const res = await api.patch(`/inventory/variants/${variantId}`, { stockQuantity });
     return res.data.data;

@@ -108,7 +108,7 @@ const productController = {
     if (price <= 0) return sendError(res, 400, 'Base selling price must be greater than 0.');
     if (discountPrice !== null && discountPrice <= 0) return sendError(res, 400, 'Discounted price must be greater than 0.');
     if (costPrice !== null && costPrice <= 0) return sendError(res, 400, 'Cost price must be greater than 0.');
-    if (discountPrice !== null && price < discountPrice) return sendError(res, 400, 'Discounted price cannot be greater than the original selling price.');
+    if (discountPrice !== null && price < discountPrice) return sendError(res, 400, 'Selling Price cannot be greater than MRP.');
 
     try {
       const created = await productRepository.createProduct(data);
@@ -134,7 +134,7 @@ const productController = {
     if (price <= 0) return sendError(res, 400, 'Base selling price must be greater than 0.');
     if (discountPrice !== null && discountPrice <= 0) return sendError(res, 400, 'Discounted price must be greater than 0.');
     if (costPrice !== null && costPrice <= 0) return sendError(res, 400, 'Cost price must be greater than 0.');
-    if (discountPrice !== null && price < discountPrice) return sendError(res, 400, 'Discounted price cannot be greater than the original selling price.');
+    if (discountPrice !== null && price < discountPrice) return sendError(res, 400, 'Selling Price cannot be greater than MRP.');
 
     try {
       const existing = await productRepository.findProductById(id);
